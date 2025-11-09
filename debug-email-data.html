@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug EmailJS Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
+        <h1>🔍 Debug EmailJS Data</h1>
+        <p>This will show exactly what data is being sent to your EmailJS template.</p>
+        
+        <button id="debugBtn" style="background: #dc2626; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin: 10px;">
+            🔍 Debug Email Data
+        </button>
+        
+        <button id="sendBtn" style="background: #059669; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin: 10px;">
+            📧 Send Debug Email
+        </button>
+        
+        <div id="output" style="margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9;"></div>
+    </div>
+
+    <script>
+        // Initialize EmailJS
+        emailjs.init('_PAsQMMBy-RHc5NZL');
+
+        // Simulate exactly what your order process sends
+        const simulateOrderData = {
+            id: 'DEBUG-' + Date.now(),
+            customerName: 'Manian VJS',
+            customerPhone: '8870636994',
+            customerAddress: '185,East Colony, Lakshmi Puram, Kovilpatti, Tamil Nadu - 628502',
+            items: [
+                { name: 'Turmeric Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Idly Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Rasam Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Sambar Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Milagu Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Jeera Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Malli Powder - 50g Sample', qty: 1, price: 0 }
+            ],
+            totalPrice: 0,
+            paymentStatus: 'confirmed',
+            deliveryDate: '3-5 business days'
+        };
+
+        function debugEmailData() {
+            const output = document.getElementById('output');
+            
+            // Format items exactly like our service
+            const orderItemsFormatted = simulateOrderData.items.map((i) => {
+                const name = i.name || i.product_name || 'Unknown Product';
+                const qty = i.qty || i.quantity || 1;
+                return `- ${name} x ${qty}`;
+            }).join('\n');
+
+            const emailParams = {
+                order_id: simulateOrderData.id,
+                customer_name: simulateOrderData.customerName,
+                customer_phone: simulateOrderData.customerPhone,
+                delivery_address: simulateOrderData.customerAddress,
+                order_items: orderItemsFormatted,
+                total_price: simulateOrderData.totalPrice,
+                payment_status: simulateOrderData.paymentStatus,
+                delivery_date: simulateOrderData.deliveryDate,
+            };
+
+            output.innerHTML = `
+                <h3>🔍 Debug Results:</h3>
+                <h4>📦 Raw order_items value:</h4>
+                <pre style="background: #000; color: #0f0; padding: 10px; border-radius: 5px;">${orderItemsFormatted}</pre>
+                
+                <h4>📧 All EmailJS Parameters:</h4>
+                <pre style="background: #f0f0f0; padding: 10px; border-radius: 5px; overflow-x: auto;">${JSON.stringify(emailParams, null, 2)}</pre>
+                
+                <h4>✅ Checks:</h4>
+                <ul>
+                    <li>order_items is ${orderItemsFormatted ? '✅ NOT EMPTY' : '❌ EMPTY'}</li>
+                    <li>order_items length: ${orderItemsFormatted.length} characters</li>
+                    <li>Number of lines: ${orderItemsFormatted.split('\n').length}</li>
+                    <li>Contains newlines: ${orderItemsFormatted.includes('\n') ? '✅ YES' : '❌ NO'}</li>
+                </ul>
+                
+                <h4>🎯 What the template should render:</h4>
+                <div style="background: #e5f3ff; padding: 15px; border-radius: 5px; border-left: 4px solid #2563eb;">
+                    <strong>Order Items:</strong><br>
+                    ${orderItemsFormatted.replace(/\n/g, '<br>')}
+                </div>
+            `;
+        }
+
+        async function sendDebugEmail() {
+            const output = document.getElementById('output');
+            
+            try {
+                // Format items exactly like our service
+                const orderItemsFormatted = simulateOrderData.items.map((i) => {
+                    const name = i.name || i.product_name || 'Unknown Product';
+                    const qty = i.qty || i.quantity || 1;
+                    return `- ${name} x ${qty}`;
+                }).join('\n');
+
+                const emailParams = {
+                    order_id: simulateOrderData.id,
+                    customer_name: simulateOrderData.customerName,
+                    customer_phone: simulateOrderData.customerPhone,
+                    delivery_address: simulateOrderData.customerAddress,
+                    order_items: orderItemsFormatted,
+                    total_price: simulateOrderData.totalPrice,
+                    payment_status: simulateOrderData.paymentStatus,
+                    delivery_date: simulateOrderData.deliveryDate,
+                };
+
+                output.innerHTML = '<p>📧 Sending debug email...</p>';
+
+                const result = await emailjs.send(
+                    'service_lfndsjx',
+                    'template_xdvaj0r',
+                    emailParams
+                );
+
+                output.innerHTML = `
+                    <h3>✅ Email Sent Successfully!</h3>
+                    <p><strong>Status:</strong> ${result.status}</p>
+                    <p><strong>Response:</strong> ${result.text}</p>
+                    <p><strong>Order ID:</strong> ${emailParams.order_id}</p>
+                    
+                    <h4>📦 Data sent to template:</h4>
+                    <pre style="background: #000; color: #0f0; padding: 10px; border-radius: 5px;">${orderItemsFormatted}</pre>
+                    
+                    <div style="background: #dcfce7; padding: 15px; border-radius: 5px; border-left: 4px solid #16a34a; margin-top: 15px;">
+                        <strong>🎯 Check your email!</strong><br>
+                        The email should now show all 7 products instead of "Product Name x 1"
+                    </div>
+                `;
+
+            } catch (error) {
+                output.innerHTML = `
+                    <h3>❌ Email Failed!</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <pre style="background: #fee2e2; padding: 10px; border-radius: 5px; color: #dc2626;">${JSON.stringify(error, null, 2)}</pre>
+                `;
+            }
+        }
+
+        document.getElementById('debugBtn').addEventListener('click', debugEmailData);
+        document.getElementById('sendBtn').addEventListener('click', sendDebugEmail);
+
+        // Auto-run debug on load
+        setTimeout(debugEmailData, 500);
+    </script>
+</body>
+</html>

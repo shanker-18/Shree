@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailJS Test</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .config-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .config-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .config-item {
+            margin: 8px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 EmailJS Test Suite</h1>
+        
+        <div class="config-section">
+            <h3>📧 EmailJS Configuration</h3>
+            <div class="config-item">Service ID: <span id="serviceId">Loading...</span></div>
+            <div class="config-item">Warehouse Template: <span id="warehouseTemplate">Loading...</span></div>
+            <div class="config-item">Customer Template: <span id="customerTemplate">Loading...</span></div>
+            <div class="config-item">Public Key: <span id="publicKey">Loading...</span></div>
+            <div class="config-item">Warehouse Email: <span id="warehouseEmail">Loading...</span></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🏪 Warehouse Email Test</h3>
+            <p>This will send a test order notification to the warehouse email.</p>
+            <button id="testWarehouse" onclick="testWarehouseEmail()">Send Warehouse Email</button>
+            <div id="warehouseResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>👤 Customer Email Test</h3>
+            <p>This will send a test order confirmation to a customer email.</p>
+            <button id="testCustomer" onclick="testCustomerEmail()">Send Customer Email</button>
+            <div id="customerResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Test Results Summary</h3>
+            <div id="summary" class="result info">
+                Click the test buttons above to run EmailJS tests.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // EmailJS Configuration (you would normally load these from environment variables)
+        const CONFIG = {
+            SERVICE_ID: 'service_lfndsjx',
+            TEMPLATE_WAREHOUSE: 'template_xdvaj0r',
+            TEMPLATE_CUSTOMER: 'template_customer',
+            PUBLIC_KEY: '_PAsQMMBy-RHc5NZL',
+            WAREHOUSE_EMAIL: 'shreeraagaswaadghar@gmail.com'
+        };
+
+        // Test order data
+        const testOrder = {
+            id: 'EMAILJS-TEST-' + Date.now(),
+            order_id: 'EMAILJS-TEST-' + Date.now(),
+            customerName: 'John Doe',
+            guest_name: 'John Doe',
+            customerPhone: '9876543210',
+            guest_phone: '9876543210',
+            customerAddress: '123 Main Street, Mumbai, Maharashtra, 400001',
+            guest_address: '123 Main Street, Mumbai, Maharashtra, 400001',
+            guest_email: 'customer@example.com',
+            items: [
+                {
+                    name: 'Sambar Powder',
+                    product_name: 'Sambar Powder',
+                    qty: 2,
+                    quantity: 2,
+                    price: 150
+                },
+                {
+                    name: 'Rasam Powder',
+                    product_name: 'Rasam Powder',
+                    qty: 1,
+                    quantity: 1,
+                    price: 120
+                },
+                {
+                    name: 'Pure Turmeric Powder',
+                    product_name: 'Pure Turmeric Powder',
+                    qty: 3,
+                    quantity: 3,
+                    price: 80
+                }
+            ],
+            totalPrice: 590,
+            total_price: 590,
+            final_amount: 590,
+            paymentStatus: 'Confirmed',
+            payment_status: 'Confirmed',
+            deliveryDate: '3-5 business days',
+            delivery_date: '3-5 business days'
+        };
+
+        let warehouseTestResult = null;
+        let customerTestResult = null;
+
+        // Initialize EmailJS
+        (function() {
+            emailjs.init(CONFIG.PUBLIC_KEY);
+            
+            // Display configuration
+            document.getElementById('serviceId').textContent = CONFIG.SERVICE_ID;
+            document.getElementById('warehouseTemplate').textContent = CONFIG.TEMPLATE_WAREHOUSE;
+            document.getElementById('customerTemplate').textContent = CONFIG.TEMPLATE_CUSTOMER;
+            document.getElementById('publicKey').textContent = CONFIG.PUBLIC_KEY.substring(0, 8) + '***';
+            document.getElementById('warehouseEmail').textContent = CONFIG.WAREHOUSE_EMAIL;
+        })();
+
+        async function testWarehouseEmail() {
+            const button = document.getElementById('testWarehouse');
+            const resultDiv = document.getElementById('warehouseResult');
+            
+            button.disabled = true;
+            button.textContent = 'Sending...';
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = '📤 Sending warehouse email...';
+
+            try {
+                const templateParams = {
+                    order_id: testOrder.id || testOrder.order_id,
+                    customer_name: testOrder.customerName || testOrder.guest_name,
+                    customer_phone: testOrder.customerPhone || testOrder.guest_phone,
+                    delivery_address: testOrder.customerAddress || testOrder.guest_address,
+                    order_items: testOrder.items.map((i) => `- ${i.name || i.product_name} x ${i.qty || i.quantity}`).join("\n"),
+                    total_price: testOrder.totalPrice || testOrder.total_price || testOrder.final_amount,
+                    payment_status: testOrder.paymentStatus || testOrder.payment_status || 'Confirmed',
+                    delivery_date: testOrder.deliveryDate || testOrder.delivery_date || '3-5 business days',
+                };
+
+                console.log('📋 Warehouse Template Parameters:', templateParams);
+
+                const result = await emailjs.send(
+                    CONFIG.SERVICE_ID,
+                    CONFIG.TEMPLATE_WAREHOUSE,
+                    templateParams
+                );
+
+                warehouseTestResult = { success: true, result };
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Warehouse email sent successfully!\n\nResponse: ${result.text}\nStatus: ${result.status}\n\nTemplate Parameters:\n${JSON.stringify(templateParams, null, 2)}`;
+                
+                console.log("✅ Warehouse email sent successfully!", result);
+
+            } catch (error) {
+                warehouseTestResult = { success: false, error };
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Error sending warehouse email:\n\n${error.text || error.message || error}\n\nPlease check:\n1. EmailJS service configuration\n2. Template exists and is published\n3. Template variables match\n4. Service limits not exceeded`;
+                
+                console.error("❌ Error sending warehouse email:", error);
+            }
+
+            button.disabled = false;
+            button.textContent = 'Send Warehouse Email';
+            updateSummary();
+        }
+
+        async function testCustomerEmail() {
+            const button = document.getElementById('testCustomer');
+            const resultDiv = document.getElementById('customerResult');
+            
+            button.disabled = true;
+            button.textContent = 'Sending...';
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.textContent = '📤 Sending customer email...';
+
+            try {
+                const templateParams = {
+                    order_id: testOrder.id || testOrder.order_id,
+                    customer_name: testOrder.customerName || testOrder.guest_name,
+                    customer_email: testOrder.guest_email,
+                    delivery_address: testOrder.customerAddress || testOrder.guest_address,
+                    order_items: testOrder.items.map((i) => `- ${i.name || i.product_name} x ${i.qty || i.quantity}`).join("\n"),
+                    total_price: testOrder.totalPrice || testOrder.total_price || testOrder.final_amount,
+                    payment_status: testOrder.paymentStatus || testOrder.payment_status || 'Confirmed',
+                    delivery_date: testOrder.deliveryDate || testOrder.delivery_date || '3-5 business days',
+                };
+
+                console.log('📋 Customer Template Parameters:', templateParams);
+
+                const result = await emailjs.send(
+                    CONFIG.SERVICE_ID,
+                    CONFIG.TEMPLATE_CUSTOMER,
+                    templateParams
+                );
+
+                customerTestResult = { success: true, result };
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Customer email sent successfully!\n\nResponse: ${result.text}\nStatus: ${result.status}\n\nTemplate Parameters:\n${JSON.stringify(templateParams, null, 2)}`;
+                
+                console.log("✅ Customer email sent successfully!", result);
+
+            } catch (error) {
+                customerTestResult = { success: false, error };
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Error sending customer email:\n\n${error.text || error.message || error}\n\nPlease check:\n1. EmailJS service configuration\n2. Template exists and is published\n3. Template variables match\n4. Service limits not exceeded`;
+                
+                console.error("❌ Error sending customer email:", error);
+            }
+
+            button.disabled = false;
+            button.textContent = 'Send Customer Email';
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const summaryDiv = document.getElementById('summary');
+            
+            let summary = '📊 Test Results Summary:\n\n';
+            
+            if (warehouseTestResult !== null) {
+                summary += `Warehouse Email: ${warehouseTestResult.success ? '✅ SUCCESS' : '❌ FAILED'}\n`;
+            } else {
+                summary += 'Warehouse Email: ⏳ Not tested yet\n';
+            }
+            
+            if (customerTestResult !== null) {
+                summary += `Customer Email: ${customerTestResult.success ? '✅ SUCCESS' : '❌ FAILED'}\n`;
+            } else {
+                summary += 'Customer Email: ⏳ Not tested yet\n';
+            }
+
+            if (warehouseTestResult !== null && customerTestResult !== null) {
+                const allSuccess = warehouseTestResult.success && customerTestResult.success;
+                summary += `\nOverall Status: ${allSuccess ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}`;
+                
+                if (!allSuccess) {
+                    summary += '\n\n🔧 Troubleshooting Tips:\n';
+                    summary += '• Check EmailJS dashboard for service status\n';
+                    summary += '• Verify templates are published and active\n';
+                    summary += '• Ensure template variable names match exactly\n';
+                    summary += '• Check service usage limits\n';
+                    summary += '• Verify email service configuration';
+                }
+            }
+
+            summaryDiv.textContent = summary;
+        }
+    </script>
+</body>
+</html>
