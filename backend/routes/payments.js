@@ -34,7 +34,7 @@ router.post('/create-order', async (req, res) => {
     }
 
     const options = {
-      amount: Math.round(amount * 100), // Razorpay expects amount in paise
+      amount: amount, // Frontend sends amount in paise already (amount * 100)
       currency,
       receipt: receipt || `rcpt_${Date.now()}`,
     };
