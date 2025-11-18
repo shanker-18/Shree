@@ -37,11 +37,11 @@ router.post('/create-order', async (req, res) => {
       });
     }
 
-    // Frontend sends amount in paise already (rupees * 100)
-    // So we use it directly without further conversion
-    const amountInPaise = normalizedAmount;
-    console.log('🧾 Backend - received amount (paise):', normalizedAmount);
-    console.log('🧾 Backend - amount to send to Razorpay (paise):', amountInPaise);
+    // Frontend sends amount in RUPEES, backend converts to paise
+    // Razorpay expects amount in paise (smallest currency unit)
+    const amountInPaise = Math.round(normalizedAmount * 100);
+    console.log('🧾 Backend - received amount (rupees):', normalizedAmount);
+    console.log('🧾 Backend - converted to paise:', amountInPaise);
 
     const options = {
       amount: amountInPaise, // Razorpay expects amount in paise
