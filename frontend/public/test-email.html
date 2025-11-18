@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Test - 7 Sample Products</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
+        <h1>EmailJS Test - 7 Sample Products</h1>
+        <p>This page tests the email functionality with 7 sample products to reproduce the issue.</p>
+        
+        <button id="testEmail" style="background: #007cba; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
+            Send Test Email
+        </button>
+        
+        <div id="result" style="margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background: #f9f9f9; display: none;">
+            <h3>Test Result:</h3>
+            <pre id="resultText"></pre>
+        </div>
+
+        <div id="console" style="margin-top: 20px; padding: 15px; border: 1px solid #333; border-radius: 5px; background: #000; color: #00ff00; font-family: monospace; display: none;">
+            <h3 style="color: white;">Console Output:</h3>
+            <pre id="consoleText"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Initialize EmailJS
+        emailjs.init('_PAsQMMBy-RHc5NZL');
+
+        // Override console.log to capture output
+        let consoleOutput = '';
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            consoleOutput += args.join(' ') + '\n';
+            originalLog.apply(console, arguments);
+            document.getElementById('consoleText').textContent = consoleOutput;
+            document.getElementById('console').style.display = 'block';
+        };
+        
+        console.error = function(...args) {
+            consoleOutput += 'ERROR: ' + args.join(' ') + '\n';
+            originalError.apply(console, arguments);
+            document.getElementById('consoleText').textContent = consoleOutput;
+            document.getElementById('console').style.display = 'block';
+        };
+
+        // Test order with 7 sample products
+        const testOrder = {
+            id: 'TEST-7-SAMPLES-' + Date.now(),
+            customerName: 'Manian VJS',
+            customerPhone: '8870636994',
+            customerAddress: '185, East Colony, Lakshmi Puram, Kovilpatti, Tamil Nadu - 628502',
+            items: [
+                { name: 'Turmeric Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Idly Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Rasam Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Sambar Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Milagu Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Jeera Powder - 50g Sample', qty: 1, price: 0 },
+                { name: 'Malli Powder - 50g Sample', qty: 1, price: 0 }
+            ],
+            totalPrice: 0,
+            paymentStatus: 'confirmed',
+            deliveryDate: '3-5 business days'
+        };
+
+        async function sendTestEmail() {
+            try {
+                console.log('🧪 Testing email with 7 sample products...');
+                console.log('📋 Test Order:');
+                console.log(`   Order ID: ${testOrder.id}`);
+                console.log(`   Customer: ${testOrder.customerName}`);
+                console.log(`   Phone: ${testOrder.customerPhone}`);
+                console.log(`   Items: ${testOrder.items.length} items`);
+                
+                console.log('   Product List:');
+                testOrder.items.forEach((item, index) => {
+                    console.log(`     ${index + 1}. ${item.name} x ${item.qty}`);
+                });
+                
+                // Format items exactly like the working test-emailjs.js
+                const orderItemsFormatted = testOrder.items.map((i) => {
+                    const name = i.name || 'Unknown Product';
+                    const qty = i.qty || 1;
+                    return `- ${name} x ${qty}`;
+                }).join('\n');
+                
+                console.log('📦 Formatted order items:');
+                console.log(orderItemsFormatted);
+                
+                const emailParams = {
+                    order_id: testOrder.id,
+                    customer_name: testOrder.customerName,
+                    customer_phone: testOrder.customerPhone,
+                    delivery_address: testOrder.customerAddress,
+                    order_items: orderItemsFormatted,
+                    total_price: testOrder.totalPrice,
+                    payment_status: testOrder.paymentStatus,
+                    delivery_date: testOrder.deliveryDate,
+                };
+                
+                console.log('📧 Sending email with parameters:');
+                console.log(JSON.stringify(emailParams, null, 2));
+                
+                const result = await emailjs.send(
+                    'service_lfndsjx',
+                    'template_xdvaj0r',
+                    emailParams
+                );
+                
+                console.log('✅ Email sent successfully!');
+                console.log('📧 EmailJS Response:', result.text);
+                console.log('📧 Status:', result.status);
+                
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('resultText').textContent = `✅ SUCCESS!\n\nOrder ID: ${testOrder.id}\nEmail Status: ${result.status}\nResponse: ${result.text}\n\nAll 7 products should now appear in the email instead of "Product Name x 1"`;
+                
+            } catch (error) {
+                console.error('❌ Email test failed:', error);
+                
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('resultText').textContent = `❌ FAILED!\n\nError: ${error.message || error}\n\nPlease check the console output above for details.`;
+            }
+        }
+
+        document.getElementById('testEmail').addEventListener('click', sendTestEmail);
+
+        // Auto-run test after 1 second
+        setTimeout(() => {
+            console.log('🚀 Auto-running email test...');
+            sendTestEmail();
+        }, 1000);
+    </script>
+</body>
+</html>

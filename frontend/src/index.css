@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global premium background */
+body {
+  background-color: #ffffff;
+}
+
+/* Custom scrollbar styles */
+.scrollbar-hide {
+  /* Firefox */
+  scrollbar-width: none;
+  /* Safari and Chrome */
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Premium Custom animations - DISABLED */
+/* All keyframe animations have been disabled to remove motion */
+
+/* Premium Background patterns */
+.pattern-dots {
+  background-image: radial-gradient(circle, rgba(30, 64, 175, 0.05) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.pattern-grid {
+  background-image: linear-gradient(rgba(30, 64, 175, 0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(30, 64, 175, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.watermark-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.02;
+  font-size: 15rem;
+  font-weight: 900;
+  color: #1e40af;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Premium Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px rgba(30, 64, 175, 0.08);
+}
+
+/* Premium gradient text - ANIMATION DISABLED */
+.gradient-text {
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6, #1e40af);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* animation: gradient-animation 4s ease-in-out infinite; DISABLED */
+  text-shadow: 0 2px 10px rgba(30, 64, 175, 0.1);
+}
+
+/* @keyframes gradient-animation - DISABLED */
+
+/* Premium button styles */
+.premium-button {
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.2), 0 2px 4px -1px rgba(30, 64, 175, 0.1);
+}
+
+.premium-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(30, 64, 175, 0.3), 0 4px 6px -2px rgba(30, 64, 175, 0.15);
+}
+
+/* Premium card styles */
+.premium-card {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  border-radius: 1rem;
+  border: 1px solid rgba(30, 64, 175, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.05), 0 2px 4px -1px rgba(30, 64, 175, 0.03);
+  transition: all 0.3s ease;
+}
+
+.premium-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(30, 64, 175, 0.1), 0 10px 10px -5px rgba(30, 64, 175, 0.05);
+  border-color: rgba(30, 64, 175, 0.2);
+}
