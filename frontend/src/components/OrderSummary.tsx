@@ -83,8 +83,8 @@ const OrderSummary: React.FC = () => {
       };
 
       // Frontend must always send amount in RUPEES (not paise)
-      const amountInRupees = Number(orderData.final_amount);
-      console.log('🧾 Frontend - Razorpay create-order amount (rupees):', amountInRupees);
+      const amount = Number(orderData.final_amount);
+      console.log('Frontend amount (rupees):', amount);
 
       // Step 1: Ask backend to create a Razorpay order
       const createOrderResponse = await fetch(API_ENDPOINTS.PAYMENTS_CREATE_ORDER, {
@@ -93,7 +93,7 @@ const OrderSummary: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: amountInRupees,
+          amount, // rupees
           currency: 'INR',
           receipt: orderPayload.order_id,
         }),
