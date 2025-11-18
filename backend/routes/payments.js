@@ -29,17 +29,37 @@ router.post('/create-order', async (req, res) => {
 
     const { amount, currency = 'INR', receipt } = req.body || {};
 
-    if (!amount || typeof amount !== 'number') {
-      return res.status(400).json({ success: false, message: 'Valid amount is required to create a payment order.' });
+    let normalizedAmount = Number(amount);
+    if (!normalizedAmount || Number.isNaN(normalizedAmount)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid amount is required to create a payment order.',
+      });
+    }
+
+    // Normalize amount so we never double-convert rupees → paise.
+    // Heuristic: for this store, real order totals in rupees will always be well below 10,000.
+    // - If the incoming amount is small (< 10,000), treat it as RUPEES and convert once.
+    // - If it's large (>= 10,000), treat it as already in PAISE and do NOT multiply again.
+    let amountInPaise;
+    if (normalizedAmount >= 10000) {
+      console.log('🧾 Backend - treating received amount as PAISE:', normalizedAmount);
+      amountInPaise = Math.round(normalizedAmount);
+    } else {
+      console.log('🧾 Backend - treating received amount as RUPEES:', normalizedAmount);
+      amountInPaise = Math.round(normalizedAmount * 100);
     }
 
     const options = {
-      amount: Math.round(amount * 100), // Razorpay expects amount in paise
+      amount: amountInPaise, // Razorpay expects amount in paise
       currency,
       receipt: receipt || `rcpt_${Date.now()}`,
     };
 
+    console.log('🧾 Backend - amount sent to Razorpay (paise):', options.amount);
+
     const order = await razorpay.orders.create(options);
+    console.log('🧾 Backend - Razorpay order.amount (paise):', order?.amount);
 
     return res.status(200).json({
       success: true,
