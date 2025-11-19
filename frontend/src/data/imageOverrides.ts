@@ -49,6 +49,18 @@ const OVERRIDES: Record<string, Record<string, string>> = {
   },
   'manjal powder': {
     '250g': '/Images/250/Turmaric Powder.jpg'
+  },
+  // Ulundhu appalam
+  'ulundhu appalam': {
+    '250g': '/public/Items/Ulundhu appalam.jpeg'
+  },
+  // Rice appalam
+  'rice appalam': {
+    '250g': '/public/Items/Rice appalam.jpeg'
+  },
+  // Maravalli Kizhangu appalam
+  'maravalli kizhangu appalam': {
+    '250g': '/Images/250/Maravalli Kizhangu appalam.jpeg'
   }
 };
 

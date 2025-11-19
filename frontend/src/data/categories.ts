@@ -64,7 +64,7 @@ export const categories: Category[] = [
     items: [
       'Ulundhu appalam: Prepared from quality blackgram powder. It\'s very tasty and healthy. Fried and eaten as a side dish for Puttu, Sambar Rice, Rasam Rice.',
       'Rice appalam: Fried in cooking oil. Eaten as a side dish for Sambar Rice, Rasam Rice, Puli Kuzhambu rice, Vathal rice, and puliyotharai rice.',
-      'Kizhangu appalam: Made from Tapioca powder mixed with masala and dried on a flatbed. Can be eaten as is or with rice.'
+      'Maravalli Kizhangu appalam: Made from Tapioca powder mixed with masala and dried on a flatbed. Can be eaten as is or with rice.'
     ]
   },
   {
