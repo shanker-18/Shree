@@ -121,11 +121,11 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center group">
-          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-white shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-gray-200">
+          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-white shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-gray-200">
             <img 
               src="/Items/top.png" 
               alt="Shree Raaga SWAAD GHAR" 
-              className="h-8 w-8 sm:h-10 sm:w-10 object-contain rounded-full"
+              className="h-full w-full object-cover rounded-lg"
               onError={(e) => {
                 // Fallback to SR text if image fails to load
                 e.currentTarget.style.display = 'none';
