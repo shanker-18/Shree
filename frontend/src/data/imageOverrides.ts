@@ -52,15 +52,15 @@ const OVERRIDES: Record<string, Record<string, string>> = {
   },
   // Ulundhu appalam
   'ulundhu appalam': {
-    '250g': '/public/Items/Ulundhu appalam.jpeg'
+    '250g': '/Images/250/Puliyotharai Mix.jpg'
   },
   // Rice appalam
   'rice appalam': {
-    '250g': '/public/Items/Rice appalam.jpeg'
+    '250g': '/Images/250/Puliyotharai Mix.jpg'
   },
   // Maravalli Kizhangu appalam
   'maravalli kizhangu appalam': {
-    '250g': '/Images/250/Maravalli Kizhangu appalam.jpeg'
+    '250g': '/Images/250/Puliyotharai Mix.jpg'
   }
 };
 
