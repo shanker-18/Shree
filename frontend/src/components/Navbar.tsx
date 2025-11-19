@@ -157,6 +157,13 @@ const Navbar: React.FC = () => {
           >
             Contact
           </button>
+          <button
+            type="button"
+            onClick={() => scrollToSection('upcoming-products')}
+            className="hover:text-red-600 transition-colors duration-200"
+          >
+            Coming Soon
+          </button>
           
           {/* Permanent Claim Offer Button with Popup */}
           <div className="relative" ref={offerPopupRef}>
@@ -360,6 +367,16 @@ const Navbar: React.FC = () => {
               }}
             >
               Contact
+            </button>
+            <button 
+              type="button"
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:text-red-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              onClick={() => {
+                scrollToSection('upcoming-products');
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              Coming Soon
             </button>
             
             {/* Mobile Permanent Claim Offer Button with Popup */}

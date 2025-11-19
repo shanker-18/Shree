@@ -87,9 +87,9 @@ export const getProductPrice = (name: string, weight?: Weight): number => {
     if (w === '250g') return 180;
   }
 
-  // 7. Coffee Powder – 500g: 15
+  // 7. Coffee Powder – 500g: 1
   if (isCoffee) {
-    if (w === '500g') return 15;
+    if (w === '500g') return 1;
   }
 
   // Fallback to base price (currently ₹200)

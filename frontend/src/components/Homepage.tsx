@@ -33,6 +33,7 @@ import { getProductPrice, isProductAvailable } from '../data/availability';
 import { hasUserClaimedFirstOrderDiscount } from '../hooks/useFirstOrderPopup';
 import { getShortDescription } from '../data/shortDescriptions';
 import { getImageOverride } from '../data/imageOverrides';
+import mobileHero from '../../Images/100/Mobile.png';
 
 // Custom CSS for premium styling
 const customStyles = `
@@ -347,6 +348,19 @@ const Homepage: React.FC = () => {
     return item.includes(':') ? item.split(':')[0].trim() : item;
   };
 
+  // Helper to detect products that already have proper images & full flows
+  const hasImageProduct = (title: string): boolean => {
+    const lower = title.toLowerCase();
+    const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
+    const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
+    const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
+    const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
+    const isHealth = lower.includes('health mix') || lower.includes('healthmix');
+    const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
+    const isCoffee = lower.includes('coffee') && lower.includes('powder');
+    return isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee;
+  };
+
   // Comprehensive image mapping - Updated to use ALL available images
   const productImageMap: { pattern: RegExp; src: string; category?: string }[] = [
     // Powder category - exact matches with available images
@@ -490,8 +504,8 @@ const Homepage: React.FC = () => {
         
         {/* Mobile hero image (hidden on desktop) */}
         <img 
-          src="/Items/Mobile1.jpeg" 
-          alt="Shree Raaga SWAAD GHAR - Mobile Optimized View" 
+          src={mobileHero} 
+          alt="Shree Raaga SWAAD GHAR - Mobile Product Collection" 
           className="block md:hidden max-w-full max-h-full w-auto h-auto object-contain"
           width={800}
           height={1200}
@@ -595,19 +609,8 @@ const Homepage: React.FC = () => {
                   });
                 });
                 
-                const hasImage = (title: string) => {
-                  const lower = title.toLowerCase();
-                  const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
-                  const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
-                  const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
-                  const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
-                  const isHealth = lower.includes('health mix') || lower.includes('healthmix');
-                  const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
-                  const isCoffee = lower.includes('coffee') && lower.includes('powder');
-                  return isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee;
-                };
-
-                const products = allProducts.sort((a,b) => (hasImage(getItemTitle(b.item))?1:0) - (hasImage(getItemTitle(a.item))?1:0));
+                // Show only fully-ready products (with proper images) in the main carousel
+                const products = allProducts.filter((p) => hasImageProduct(getItemTitle(p.item)));
 
                 return products.map((product, index) => {
                   const itemTitle = getItemTitle(product.item);
@@ -785,6 +788,66 @@ const Homepage: React.FC = () => {
         </div>
       </section>
 
+      {/* Coming Soon Products Section */}
+      <section id="upcoming-products" className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-slate-50 via-white to-slate-50 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 tracking-tight">
+              Coming Soon Products
+            </h2>
+            <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+              A sneak peek at traditional products that will be available on Shree Raaga SWAAD GHAR very soon.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {(() => {
+              const upcoming: Array<{ item: string; categoryTitle: string }> = [];
+              categories.forEach((category) => {
+                category.items.forEach((item) => {
+                  const title = getItemTitle(item);
+                  if (!hasImageProduct(title)) {
+                    upcoming.push({ item, categoryTitle: category.title });
+                  }
+                });
+              });
+
+              if (!upcoming.length) {
+                return (
+                  <div className="col-span-full text-center text-gray-600 text-sm">
+                    All products are currently available. Please check back later for new launches.
+                  </div>
+                );
+              }
+
+              return upcoming.map((product, index) => {
+                const title = getItemTitle(product.item);
+                return (
+                  <div
+                    key={`${product.categoryTitle}-${title}-${index}`}
+                    className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-5 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 leading-snug pr-2">
+                          {title}
+                        </h3>
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-900 text-white">
+                          Coming Soon
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-gray-600 mb-2">
+                        {getShortDescription(title) || 'This product is getting ready and will be available for ordering soon.'}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-xs text-gray-500 font-medium">Category: {product.categoryTitle}</p>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      </section>
 
 
       {/* Brand Story Section */}

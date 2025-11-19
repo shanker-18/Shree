@@ -345,6 +345,19 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
     return item.includes(':') ? item.split(':')[0].trim() : item;
   };
   
+  // Helper to detect products that already have proper images & full flows
+  const hasImageProduct = (itemTitle: string): boolean => {
+    const lower = itemTitle.toLowerCase();
+    const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
+    const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
+    const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
+    const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
+    const isHealth = lower.includes('health mix') || lower.includes('healthmix');
+    const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
+    const isCoffee = lower.includes('coffee') && lower.includes('powder');
+    return isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee;
+  };
+  
   const handleProductClick = (productName: string) => {
     // Use base price per product (e.g., 250g price for powders)
     const price = getProductPrice(productName);
@@ -536,8 +549,11 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
       
       // For now, weight filter is just for show - all products are 200g
       const matchesWeight = !weightFilter || weightFilter === '200g';
+
+      // Only show fully-ready products (with images and flows) in the main grid
+      const isAvailableProduct = hasImageProduct(itemTitle);
       
-      return matchesSearch && matchesWeight;
+      return matchesSearch && matchesWeight && isAvailableProduct;
     });
   }, [category, searchQuery, weightFilter]);
 
