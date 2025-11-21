@@ -166,7 +166,7 @@ const Login: React.FC = () => {
               <p className="text-gray-600 mb-4">Don't have an account?</p>
               <Link to="/register" className="inline-flex items-center justify-center w-full bg-white border-2 border-gray-200 text-gray-800 font-medium py-4 px-6 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 hover:scale-105 transform">
                 <UserPlus className="h-4 w-4 mr-2" />
-                Create Premium Account
+                Create Account
               </Link>
             </div>
           </motion.div>

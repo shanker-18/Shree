@@ -8,6 +8,7 @@ import { useTempSamples } from '../contexts/TempSamplesContext';
 import AuthModal from './AuthModal';
 import { isProductAvailable, allowedWeightsForProduct, weightToFolder, getProductPrice } from '../data/availability';
 import { categories } from '../data/categories';
+import { ULUNDHU_APPALAM_IMAGE, RICE_APPALAM_IMAGE } from '../data/externalAssets';
 
 interface ProductDetailsProps {}
 
@@ -45,6 +46,10 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
   const { name, category, description, price, image } = product;
   const isAvailable = isProductAvailable(name);
 
+  // Pre-compute allowed weights & preferred weight for this product
+  const allowedMemo = useMemo(() => allowedWeightsForProduct(name), [name]);
+  const preferredWeight = (selectedWeights[selectedWeights.length-1] || (allowedMemo[0] as '100g'|'250g'|'500g') || '500g') as ('100g'|'250g'|'500g');
+
   // Build richer description from categories (use CategoryPage content logic)
   const categoryObj = useMemo(() => categories.find(c => c.title === category), [category]);
   const getItemTitle = (item: string): string => (item.includes(':') ? item.split(':')[0].trim() : item);
@@ -63,21 +68,39 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
   };
   const richDescription = useMemo(() => getRichDescription(name), [name, categoryObj]);
   
-  // Image/Buy gating based on known image-backed products
+  // Image/Buy gating based on known image-backed products OR explicit overrides
   const lower = name.toLowerCase();
   const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
-  const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
+  const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai') || lower.includes('puliyodharai');
   const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
-  const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
+  const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special') || lower.includes('spcl')) && lower.includes('paruppu') && lower.includes('powder');
   const isHealth = lower.includes('health mix') || lower.includes('healthmix');
   const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
   const isCoffee = lower.includes('coffee') && lower.includes('powder');
-  const hasImageProduct = isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee;
+  const isMaravalliAppalam = lower.includes('maravalli') && lower.includes('kizhangu') && lower.includes('appalam');
+  const isUlundhuAppalam = lower.includes('ulundhu') && lower.includes('appalam');
+  const isRiceAppalam = lower.includes('rice') && lower.includes('appalam');
+
+  // Shared extra gallery slide shown for all products
+  const GALLERY_PROMO_IMAGE = 'https://res.cloudinary.com/dtwabmxr7/image/upload/v1763653351/Screenshot_2025-11-20_211141_yxzlbb.png';
+
+  let hasImageProduct = false;
+  try {
+    const { getImageOverride } = require('../data/imageOverrides');
+    // If any explicit override exists (e.g. Maravalli Kizhangu appalam) treat as image-ready
+    if (getImageOverride(name)) {
+      hasImageProduct = true;
+    }
+  } catch {}
+  if (!hasImageProduct) {
+    hasImageProduct = isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee;
+  }
+  // Explicitly treat Appalams as image-backed and purchasable
+  if (isMaravalliAppalam || isUlundhuAppalam || isRiceAppalam) {
+    hasImageProduct = true;
+  }
   
   // Resolve image from Images/<weight>/<name>.(jpg|png|webp)
-  const allowedMemo = useMemo(() => allowedWeightsForProduct(name), [name]);
-  
-  // Initialize selectedWeights based on allowed weights when product changes
   useEffect(() => {
     const next = (allowedMemo.length > 0)
       ? [allowedMemo[0] as '100g'|'250g'|'500g']
@@ -93,7 +116,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
       return updated;
     });
   }, [name, allowedMemo]);
-  const preferredWeight = (selectedWeights[selectedWeights.length-1] || (allowedMemo[0] as '100g'|'250g'|'500g') || '500g') as ('100g'|'250g'|'500g');
   const displayWeights = useMemo(() => (allowedMemo.length ? allowedMemo : (['500g'] as ('100g'|'250g'|'500g')[])), [allowedMemo]);
   const weightPrices = useMemo(() => {
     const map: { [key: string]: number } = {};
@@ -121,74 +143,93 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
   const galleryImages = useMemo(() => {
     if (!hasImageProduct) return [] as string[];
 
-    // For Vathakkuzhambu Mix, show main pack + preparation + ingredients images
+    // For Maravalli Kizhangu appalam, always show its dedicated label image + promo slide
+    if (isMaravalliAppalam) {
+      return ['/Images/250/Maravalli Kizhangu appalam.jpeg', GALLERY_PROMO_IMAGE] as string[];
+    }
+    // For Ulundhu appalam label
+    if (isUlundhuAppalam) {
+      return [ULUNDHU_APPALAM_IMAGE, GALLERY_PROMO_IMAGE] as string[];
+    }
+    // For Rice appalam label
+    if (isRiceAppalam) {
+      return [RICE_APPALAM_IMAGE, GALLERY_PROMO_IMAGE] as string[];
+    }
+
+    // If there's a per-product override (e.g. Maravalli Kizhangu appalam), just show that image + promo slide
+    try {
+      const { getImageOverride } = require('../data/imageOverrides');
+      const override = getImageOverride(name);
+      if (override) return [override, GALLERY_PROMO_IMAGE] as string[];
+    } catch {}
+
+    // For Vathakkuzhambu Mix, show only preparation/ingredients in the modal (pack is already visible on page)
     if (isVathak) {
-      // Use the known working 250g JPG as the first image to avoid any webp/weight mismatch
       return [
-        '/Images/250/Vathakkuzhambu Mix.jpg',
         '/Images/All/Vatha (1).png',
         '/Images/All/Vatha Ing.png',
+        GALLERY_PROMO_IMAGE,
       ];
     }
 
-    // For Puliyotharai / Puliodharai Mix
+    // For Puliyotharai / Puliodharai Mix, show only serving images in the modal
     if (isPuliyo) {
       return [
-        '/Images/250/Puliyotharai Mix.jpg',
         '/Images/All/Puli.png',
         '/Images/All/Puli (2).png',
+        GALLERY_PROMO_IMAGE,
       ];
     }
 
-    // For Poondu Idli Powder
+    // For Poondu Idli Powder, show only serving images in the modal
     if (isPoondu) {
       return [
-        '/Images/250/Poondu Idli Powder.png',
         '/Images/All/Poondu Idli (1).png',
         '/Images/All/Poondu Idli (2).png',
+        GALLERY_PROMO_IMAGE,
       ];
     }
 
-    // For Health Mix
+    // For Health Mix, show only serving images in the modal
     if (isHealth) {
       return [
-        '/Images/250/Health Mix.jpg',
         '/Images/All/Health.png',
         '/Images/All/Health 1.png',
         '/Images/All/Health 2.png',
+        GALLERY_PROMO_IMAGE,
       ];
     }
 
-    // For Turmeric Powder
+    // For Turmeric Powder, show only ingredient images in the modal
     if (isTurmeric) {
       return [
-        '/Images/250/Turmaric Powder.jpg',
         '/Images/All/Turmeric (1).png',
         '/Images/All/Turmeric (2).png',
+        GALLERY_PROMO_IMAGE,
       ];
     }
 
-    // For Coffee Powder
+    // For Coffee Powder, show only serving images in the modal
     if (isCoffee) {
       return [
-        '/Images/500/Coffee powder.jpg',
         '/Images/All/Coffee (1).png',
         '/Images/All/Coffee (2).png',
+        GALLERY_PROMO_IMAGE,
       ];
     }
 
-    // For Andra/Andhra Spl Paruppu Powder
+    // For Andra/Andhra Spl Paruppu Powder, show only serving images in the modal
     if (isAndra) {
       return [
-        '/Images/250/Andra Spl Paruppu Powder.jpg',
         '/Images/All/Andhra Spcl.png',
         '/Images/All/Andhara Spcl.png',
+        GALLERY_PROMO_IMAGE,
       ];
     }
 
-    // Fallback: just show the resolved image
-    return [resolvedImage];
-  }, [hasImageProduct, isVathak, isPuliyo, isPoondu, isHealth, isTurmeric, isCoffee, isAndra, resolvedImage]);
+    // Fallback: just show the resolved image + promo slide
+    return [resolvedImage, GALLERY_PROMO_IMAGE];
+  }, [hasImageProduct, isVathak, isPuliyo, isPoondu, isHealth, isTurmeric, isCoffee, isAndra, resolvedImage, GALLERY_PROMO_IMAGE]);
 
   const openImageModal = () => {
     if (!galleryImages.length) return;
@@ -398,13 +439,52 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
           
           <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8">
             <div>
-              {/* Show image only for Vathakkuzhambu Mix; others keep a clean placeholder */}
+              {/* Prefer per-product override image (e.g. Maravalli Kizhangu appalam), then known mixes, else collection placeholder */}
               {(() => {
+                // For Appalam products we only want to show the round label images below,
+                // so skip rendering the large banner completely.
+                if (isMaravalliAppalam || isUlundhuAppalam || isRiceAppalam) {
+                  return null;
+                }
+
+                try {
+                  const { getImageOverride } = require('../data/imageOverrides');
+                  const override = getImageOverride(name);
+                  if (override) {
+                    const candidates = [
+                      override,
+                      `/Images/250/${name}.jpeg`,
+                      `/Images/250/${name}.jpg`,
+                      `/Images/100/${name}.jpeg`,
+                      `/Images/100/${name}.jpg`
+                    ];
+                    return (
+                      <div
+                        className={`w-full h-96 ${categoryStyle.bgColor} border ${categoryStyle.borderColor} rounded-xl overflow-hidden p-6 shadow-lg cursor-pointer`}
+                        onClick={openImageModal}
+                      >
+                        <img
+                          src={candidates[0]}
+                          data-fallback={candidates.slice(1).join(',')}
+                          alt={name}
+                          className="w-full h-full object-contain object-center p-3 bg-white rounded"
+                          onError={(e:any)=>{
+                            const el = e.currentTarget as HTMLImageElement;
+                            const list = (el.getAttribute('data-fallback')||'').split(',').filter(Boolean);
+                            if (list.length) { el.src = list.shift() as string; el.setAttribute('data-fallback', list.join(',')); }
+                            else { el.src = '/Images/100/all images.jpg'; }
+                          }}
+                        />
+                      </div>
+                    );
+                  }
+                } catch {}
+
                 const lower = name.toLowerCase();
                 const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
-                const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
+                const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai') || lower.includes('puliyodharai');
                 const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
-                const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
+                const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special') || lower.includes('spcl')) && lower.includes('paruppu') && lower.includes('powder');
                 const isHealth = lower.includes('health mix') || lower.includes('healthmix');
                 const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
                 const isCoffee = lower.includes('coffee') && lower.includes('powder');
@@ -461,6 +541,39 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
                 );
               })()}
               
+              {/* Extra label images just for Appalam products */}
+              {(isMaravalliAppalam || isUlundhuAppalam || isRiceAppalam) && (
+                <div className="mt-4 w-full flex items-center justify-center gap-6 flex-wrap">
+                  {isMaravalliAppalam && (
+                    <div className="w-48 h-48 bg-white rounded-full shadow border border-emerald-200 flex items-center justify-center overflow-hidden">
+                      <img
+                        src="/Images/250/Maravalli Kizhangu appalam.jpeg"
+                        alt="Maravalli Kizhangu appalam label"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  )}
+                  {isUlundhuAppalam && (
+                    <div className="w-48 h-48 bg-white rounded-full shadow border border-emerald-200 flex items-center justify-center overflow-hidden">
+                      <img
+                        src={ULUNDHU_APPALAM_IMAGE}
+                        alt="Ulundhu appalam label"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  )}
+                  {isRiceAppalam && (
+                    <div className="w-48 h-48 bg-white rounded-full shadow border border-emerald-200 flex items-center justify-center overflow-hidden">
+                      <img
+                        src={RICE_APPALAM_IMAGE}
+                        alt="Rice appalam label"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Temp Samples Indicator */}
               {hasTempSamples() && (
                 <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
@@ -614,26 +727,32 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
               <X className="h-6 w-6" />
             </button>
 
-            <div className="flex items-center justify-between">
-              <button
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
-                onClick={showPrevImage}
-              >
-                <ChevronLeft className="h-6 w-6" />
-              </button>
-
+            {/* Center image with overlaid arrows so they are always visible on mobile.
+                The wrapper has a minimum height so each slide keeps the same visual size on mobile. */}
+            <div className="relative flex items-center justify-center min-h-[60vh]">
               <img
                 src={galleryImages[activeImageIndex]}
                 alt={name}
                 className="max-h-[80vh] max-w-full object-contain bg-white rounded-xl shadow-2xl"
               />
 
-              <button
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
-                onClick={showNextImage}
-              >
-                <ChevronRight className="h-6 w-6" />
-              </button>
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/40 hover:bg-black/60 text-white shadow-lg"
+                    onClick={showPrevImage}
+                  >
+                    <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                  </button>
+
+                  <button
+                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/40 hover:bg-black/60 text-white shadow-lg"
+                    onClick={showNextImage}
+                  >
+                    <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

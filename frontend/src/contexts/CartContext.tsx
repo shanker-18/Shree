@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useAuth } from './AuthContext';
 
 interface CartItem {
   id: string;
@@ -44,7 +45,57 @@ interface CartProviderProps {
 }
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
+  const { user } = useAuth();
+
+  // Use a per-user storage key so guests and logged-in users have separate carts
+  const storageKey = user ? `cartItems_${user.id}` : 'cartItems_guest';
+
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  // Load cart items whenever the active user (or guest) changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      let stored = localStorage.getItem(storageKey);
+
+      // Backwards compatibility: migrate legacy key if present
+      if (!stored) {
+        const legacy = localStorage.getItem('cartItems');
+        if (legacy) {
+          stored = legacy;
+          localStorage.removeItem('cartItems');
+          localStorage.setItem(storageKey, legacy);
+        }
+      }
+
+      setCartItems(stored ? JSON.parse(stored) : []);
+    } catch (error) {
+      console.error('Failed to load cartItems from localStorage', error);
+      setCartItems([]);
+    }
+  }, [storageKey]);
+
+  // Persist cart items to the correct localStorage key
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(cartItems));
+    } catch (error) {
+      console.error('Failed to save cartItems to localStorage', error);
+    }
+  }, [cartItems, storageKey]);
+
+  // When the user logs out, start with an empty guest cart
+  useEffect(() => {
+    if (!user) {
+      setCartItems([]);
+      try {
+        localStorage.setItem('cartItems_guest', JSON.stringify([]));
+      } catch (error) {
+        console.error('Failed to reset guest cart in localStorage', error);
+      }
+    }
+  }, [user]);
 
   const addToCart = (item: Omit<CartItem, 'id'>, quantity = 1) => {
     const itemName = item.name || item.product_name || 'Unknown Item';

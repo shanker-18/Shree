@@ -15,7 +15,7 @@ const FREE_SAMPLE_ITEMS = [
   { id: 'pai-appalam', name: 'Pai Appalam', category: 'Appalam' },
   { id: 'lemon-pickle', name: 'Lemon Pickle', category: 'Pickles' },
   { id: 'coconut-oil', name: 'Coconut Oil', category: 'Oils' },
-  { id: 'puliyotharai-mix', name: 'Puliyotharai Mix', category: 'Mixes' },
+  { id: 'puliyotharai-mix', name: 'Puliyodharai Mix', category: 'Mixes' },
   { id: 'sundakkai-vathal', name: 'Sundakkai Vathal', category: 'Vathal' },
   { id: 'milagu-powder', name: 'Milagu Powder', category: 'Powders' },
   { id: 'garlic-appalam', name: 'Garlic Appalam', category: 'Appalam' }

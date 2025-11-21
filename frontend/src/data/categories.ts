@@ -21,7 +21,7 @@ export const categories: Category[] = [
     borderColor: 'border-amber-200',
     textColor: 'text-amber-800',
     items: [
-      'Puliyotharai Mix: A chemical-free mix used to prepare tamarind rice. 100 grams are sufficient for a quarter-measure of rice.',
+      'Puliyodharai Mix: A chemical-free mix used to prepare tamarind rice. 100 grams are sufficient for a quarter-measure of rice.',
       'Vathakkuzhambu Mix: Contains sundakkai vathal, manathakkali vathal, and garlic. Mixing 2 tablespoons with Gingelly oil and rice makes a tasty dish.',
       'Poondu Pickle: Has medicinal value for an ailing heart and removes gastritis.',
       'Pirandai Pickle: Good for digestion and helps with joint pain.',
@@ -43,10 +43,10 @@ export const categories: Category[] = [
       'Sambar Powder: Essential spice blend for preparing authentic South Indian sambar with perfect aroma and taste.',
       'Rasam Powder: Prepared with tomato in dhal stew. Used in rasam to make it aromatic and tasty.',
       'Idli Powder: Traditional South Indian idli podi made with authentic spices and ingredients.',
-      'Poondu Idli Powder: Special garlic-infused idli powder with medicinal properties and rich taste.',
+      'Poondu Idly Powder: Special garlic-infused idli powder with medicinal properties and rich taste.',
       'Pulikuzhambu Powder: Traditional tamarind-based curry powder for authentic South Indian flavors.',
       'Ellu Idli Powder: Prepared with Gingelly oil and garlic. Eaten as a side dish with Idly or Dosa.',
-      'Andra Spl Paruppu Powder: Special Andhra-style lentil powder blend for traditional recipes.',
+      'Andhra Spcl Paruppu Powder: Special Andhra-style lentil powder blend for traditional recipes.',
       'Health Mix: Wholesome blend of grains, nuts, and pulses for a nutritious malt drink.',
       'Moringa Leaf Powder: Nutrient-rich powder made from dried moringa leaves, packed with vitamins and minerals.',
       'Curry Leaves Powder: Aromatic powder made from fresh curry leaves, adds authentic South Indian flavor.',
@@ -64,7 +64,7 @@ export const categories: Category[] = [
     items: [
       'Ulundhu appalam: Prepared from quality blackgram powder. It\'s very tasty and healthy. Fried and eaten as a side dish for Puttu, Sambar Rice, Rasam Rice.',
       'Rice appalam: Fried in cooking oil. Eaten as a side dish for Sambar Rice, Rasam Rice, Puli Kuzhambu rice, Vathal rice, and puliyotharai rice.',
-      'Kizhangu appalam: Made from Tapioca powder mixed with masala and dried on a flatbed. Can be eaten as is or with rice.'
+      'Maravalli Kizhangu appalam: Made from Tapioca powder mixed with masala and dried on a flatbed. Can be eaten as is or with rice.'
     ]
   },
   {

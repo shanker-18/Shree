@@ -258,10 +258,6 @@ const Navbar: React.FC = () => {
                     <MapPin className="h-4 w-4 text-gray-500" />
                     {savedAddress ? 'Edit Address' : 'Add Address'}
                   </button>
-                  <a href="/#categories" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md flex items-center gap-2">
-                    <ShoppingBag className="h-4 w-4 text-gray-500" />
-                    Order Products
-                  </a>
                   <button 
                     onClick={async () => {
                       await logout();

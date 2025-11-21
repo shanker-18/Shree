@@ -18,11 +18,14 @@ const OVERRIDES: Record<string, Record<string, string>> = {
     '250g': '/Images/250/Vathakkuzhambu Mix.jpg',
     '1kg': '/Images/1kg/Vathakkuzhambu Mix.jpg'
   },
-  // Puliyotharai / Puliodharai Mix
+  // Puliyotharai / Puliodharai / Puliyodharai Mix
   'puliyotharai mix': {
     '250g': '/Images/250/Puliyotharai Mix.jpg'
   },
   'puliodharai mix': {
+    '250g': '/Images/250/Puliyotharai Mix.jpg'
+  },
+  'puliyodharai mix': {
     '250g': '/Images/250/Puliyotharai Mix.jpg'
   },
   // Poondu Idli Powder (aka Poondu Idly Podi)
@@ -39,6 +42,9 @@ const OVERRIDES: Record<string, Record<string, string>> = {
   'andhra special powder': {
     '250g': '/Images/250/Andra Spl Paruppu Powder.jpg'
   },
+  'andhra spcl paruppu powder': {
+    '250g': '/Images/250/Andra Spl Paruppu Powder.jpg'
+  },
   // Turmeric (spelled Turmaric) Powder - use provided 250g image everywhere
   'turmaric powder': {
     '250g': '/Images/250/Turmaric Powder.jpg'
@@ -49,6 +55,14 @@ const OVERRIDES: Record<string, Record<string, string>> = {
   },
   'manjal powder': {
     '250g': '/Images/250/Turmaric Powder.jpg'
+  },
+  // Maravalli Kizhangu appalam - dedicated 250g image (falls back for all weights)
+  'maravalli kizhangu appalam': {
+    '250g': '/Images/250/Maravalli Kizhangu appalam.jpeg'
+  },
+  // Backward compatibility for older name
+  'kizhangu appalam': {
+    '250g': '/Images/250/Maravalli Kizhangu appalam.jpeg'
   }
 };
 

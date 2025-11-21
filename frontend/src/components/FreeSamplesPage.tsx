@@ -93,7 +93,7 @@ const FreeSamplesPage: React.FC = () => {
     'red chilli powder': 'Fine quality red chili powder for spice',
     'ulundhu appalam': 'Premium black gram papads, crispy and healthy',
     'rice appalam': 'Traditional rice-based papads for meals',
-    'kizhangu appalam': 'Tapioca-based papads with authentic taste',
+    'maravalli kizhangu appalam': 'Tapioca-based papads with authentic taste',
     'coffee powder': 'Aromatic South Indian filter coffee powder'
   };
 
@@ -167,7 +167,7 @@ const FreeSamplesPage: React.FC = () => {
         { name: 'Moringa leaf powder', category: 'Powder' },
         { name: 'Curry leaves powder', category: 'Powder' },
         { name: 'Turmeric powder', category: 'Powder' },
-        { name: 'Poondu idli powder', category: 'Powder' }
+        { name: 'Poondu idly powder', category: 'Powder' }
       ]
     },
     {
@@ -198,7 +198,7 @@ const FreeSamplesPage: React.FC = () => {
         { name: 'Sambar powder', category: 'Powder' },
         { name: 'Idli powder', category: 'Powder' },
         { name: 'Poondu pickle', category: 'Pickle' },
-        { name: 'Puliodharai mix', category: 'Mix' }
+        { name: 'Puliyodharai mix', category: 'Mix' }
       ]
     }
   ];

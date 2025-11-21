@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
-import { CartProvider } from './contexts/CartContext';
 import { DemoProvider } from './contexts/DemoContext';
 import emailjs from '@emailjs/browser';
 
@@ -25,9 +24,7 @@ createRoot(document.getElementById('root')!).render(
         v7_relativeSplatPath: true
       }}>
       <DemoProvider>
-        <CartProvider>
-          <App />
-        </CartProvider>
+        <App />
       </DemoProvider>
     </BrowserRouter>
   </StrictMode>

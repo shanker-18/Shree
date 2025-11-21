@@ -11,16 +11,16 @@
 ### **Key Changes Made:**
 
 #### **1. Fixed File Name Mismatches:**
-- **Idli Powder**: `Idly Powder.jpeg` → `Idli Powder.jpeg`
-- **Poondu Idli Powder**: `Poondu idly powder.jpeg` → `Poondu Idli Powder.jpeg`
-- **Garlic Pickle**: `Poondu pickle.jpeg` → `Garlic Pickle.jpeg`
-- **Jathikkai Pickle**: `Jathikkai pickle.jpeg` → `Jadhikkai Pickle.jpeg`
+- **Idli Powder**: `Idly Powder.jpeg`  `Idli Powder.jpeg`
+- **Poondu Idly Powder**: `Poondu idly powder.jpeg`  `Poondu Idli Powder.jpeg`
+- **Garlic Pickle**: `Poondu pickle.jpeg`  `Garlic Pickle.jpeg`
+- **Jathikkai Pickle**: `Jathikkai pickle.jpeg`  `Jadhikkai Pickle.jpeg`
 
 #### **2. Complete Product-to-Image Mapping:**
 
 **Mix & Pickle Category:**
-- ✅ **Puliyotharai Mix** → `/Items/Puliyotharai Mix.jpeg`
-- ✅ **Vathakkuzhambu Mix** → `/Items/Vathakkuzhambu Mix.jpeg`
+-  **Puliyodharai Mix**  `/Items/Puliyotharai Mix.jpeg`
+-  **Vathakkuzhambu Mix**  `/Items/Vathakkuzhambu Mix.jpeg`
 - ✅ **Puliyokuzhambu Powder** → `/Items/Puliyokuzhambu Powder.jpeg`
 - ✅ **Garlic Pickle** → `/Items/Garlic Pickle.jpeg`
 - ✅ **Pirandai Pickle** → `/Items/Pirandai pickle.jpeg`
@@ -29,12 +29,12 @@
 - ✅ **Kara Narthangai Pickle** → `/Items/Kara narthangai pickle.jpeg`
 
 **Powder Category:**
-- ✅ **Turmeric Powder** → `/Items/Turmeric Powder.jpeg`
-- ✅ **Sambar Powder** → `/Items/Sambar powder.jpeg`
-- ✅ **Rasam Powder** → `/Items/Rasam Powder.jpeg`
-- ✅ **Idli Powder** → `/Items/Idli Powder.jpeg`
-- ✅ **Poondu Idli Powder** → `/Items/Poondu Idli Powder.jpeg`
-- ✅ **Puliyokuzhambu Powder** → `/Items/Puliyokuzhambu Powder.jpeg`
+-  **Turmeric Powder**  `/Items/Turmeric Powder.jpeg`
+-  **Sambar Powder**  `/Items/Sambar powder.jpeg`
+-  **Rasam Powder**  `/Items/Rasam Powder.jpeg`
+-  **Idli Powder**  `/Items/Idli Powder.jpeg`
+-  **Poondu Idly Powder**  `/Items/Poondu Idli Powder.jpeg`
+-  **Puliyokuzhambu Powder**  `/Items/Puliyokuzhambu Powder.jpeg`
 
 ### **3. All Components Now Use Exact File Names:**
 

@@ -18,6 +18,7 @@ const allowSet = new Set<string>([
   'vathakulambumix',
   'puliyotharaimix',
   'puliodharaimix',
+  'puliyodharaimix',
   'puliyodharai mix'.replace(/\s/g,''),
   'poonduidlipodi',
   'poonduidlypodi',
@@ -26,6 +27,7 @@ const allowSet = new Set<string>([
   'andhraspecialpowder',
   'andrasplpowder',
   'andrasplparuppupowder',
+  'andhraspclparuppupowder',
   'healthmix',
   'turmericpowder',
   'coffeepowder',
@@ -59,38 +61,47 @@ export const getProductPrice = (name: string, weight?: Weight): number => {
   const w: Weight = weight || pickDefaultWeight();
 
   const isVathak = n.includes('vathakkuzhambu') || n.includes('vathakulambu');
-  const isPuliyo = n.includes('puliyotharai') || n.includes('puliodharai');
+  const isPuliyo = n.includes('puliyotharai') || n.includes('puliodharai') || n.includes('puliyodharai');
   const isPoonduIdli = n.includes('poondu') && (n.includes('idli') || n.includes('idly') || n.includes('idlipodi') || n.includes('idlipowder'));
-  const isAndraSp = (n.includes('andra') || n.includes('andhra')) && (n.includes('spl') || n.includes('special')) && n.includes('paruppu') && n.includes('powder');
+  const isAndraSp = (n.includes('andra') || n.includes('andhra')) && (n.includes('spl') || n.includes('special') || n.includes('spcl')) && n.includes('paruppu') && n.includes('powder');
   const isTurmeric = (n.includes('turmaric') || n.includes('turmeric') || n.includes('manjal')) && n.includes('powder');
   const isHealthMix = n.includes('healthmix') || n.includes('healthymix') || (n.includes('health') && n.includes('mix'));
   const isCoffee = (n.includes('coffee') && n.includes('powder')) || n.includes('coffeepowder');
+  const isUlundhuAppalam = n.includes('ulundhuappalam');
+  const isRiceAppalam = n.includes('riceappalam');
+  const isMaravalliAppalam = n.includes('maravallikizhanguappalam') || n.includes('kizhanguappalam');
 
-  // Prices from the provided table:
-  // 1. Poondu Idly Powder – 250g: 150
-  if (isPoonduIdli && w === '250g') return 150;
+  // Prices from the latest Excel price list:
+  // 1. Poondu Idly Powder – 250g: 145
+  if (isPoonduIdli && w === '250g') return 145;
 
-  // 2. Turmeric Powder – 250g: 130
-  if (isTurmeric && w === '250g') return 130;
+  // 2. Turmeric (Manjal) Powder – 250g: 125
+  if (isTurmeric && w === '250g') return 125;
 
-  // 3. Andra Spl Paruppu Powder – 250g: 180
-  if (isAndraSp && w === '250g') return 180;
+  // 3. Andra/Andhra Spl Paruppu Powder – 250g: 150
+  if (isAndraSp && w === '250g') return 150;
 
   // 4. Vathakulambu / Vathakkuzhambu Mix – 250g: 125
   if (isVathak && w === '250g') return 125;
 
-  // 5. Puliyotharai Mix – 250g: 125
+  // 5. Puliyotharai / Puliodharai Mix – 250g: 125
   if (isPuliyo && w === '250g') return 125;
 
-  // 6. Health Mix – 250g: 180
+  // 6. Health Mix – 250g: 185, 500g: 370
   if (isHealthMix) {
-    if (w === '250g') return 180;
+    if (w === '250g') return 185;
+    if (w === '500g') return 370;
   }
 
-  // 7. Coffee Powder – 500g: 1
+  // 7. Coffee Powder – 500g: 500
   if (isCoffee) {
-    if (w === '500g') return 1;
+    if (w === '500g') return 500;
   }
+
+  // 8. Appalams (single 250g pack)
+  if (isUlundhuAppalam) return 75;
+  if (isRiceAppalam) return 85;
+  if (isMaravalliAppalam) return 75;
 
   // Fallback to base price (currently ₹200)
   return productBasePrice(name) ?? 200;
@@ -101,20 +112,25 @@ export const allowedWeightsForProduct = (name: string): Weight[] => {
   const n = normalize(name);
   // Restrict specific products to only 250g
   const isVathak = n.includes('vathakkuzhambu') || n.includes('vathakulambu');
-  const isPuliyo = n.includes('puliyotharai') || n.includes('puliodharai');
+  const isPuliyo = n.includes('puliyotharai') || n.includes('puliodharai') || n.includes('puliyodharai');
   const isPoonduIdli = n.includes('poondu') && (n.includes('idli') || n.includes('idly') || n.includes('idlipodi') || n.includes('idlipowder'));
-  const isAndraSp = (n.includes('andra') || n.includes('andhra')) && (n.includes('spl') || n.includes('special')) && n.includes('paruppu') && n.includes('powder');
+  const isAndraSp = (n.includes('andra') || n.includes('andhra')) && (n.includes('spl') || n.includes('special') || n.includes('spcl')) && n.includes('paruppu') && n.includes('powder');
   const isTurmeric = (n.includes('turmaric') || n.includes('turmeric') || n.includes('manjal')) && n.includes('powder');
   // Support both "Health Mix" and "Healthy Mix" spellings
   const isHealthMix = n.includes('healthmix') || n.includes('healthymix');
   // Coffee powder special case: only 500g
   const isCoffee = (n.includes('coffee') && n.includes('powder')) || n.includes('coffeepowder');
-  if (isVathak || isPuliyo || isPoonduIdli || isAndraSp || isTurmeric) {
+  // Appalam products: only 250g pack exists
+  const isUlundhuAppalam = n.includes('ulundhuappalam');
+  const isRiceAppalam = n.includes('riceappalam');
+  const isMaravalliAppalam = n.includes('maravallikizhanguappalam') || n.includes('kizhanguappalam');
+
+  if (isVathak || isPuliyo || isPoonduIdli || isAndraSp || isTurmeric || isUlundhuAppalam || isRiceAppalam || isMaravalliAppalam) {
     return ['250g'];
   }
   if (isHealthMix) {
-    // Health(y) Mix: allow 250g only
-    return ['250g'];
+    // Health Mix: allow 250g and 500g
+    return ['250g','500g'];
   }
   if (isCoffee) {
     // Coffee Powder: allow 500g only

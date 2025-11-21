@@ -11,6 +11,7 @@ import { toSlug, parseCategorySlug } from '../utils/slugUtils';
 import { isProductAvailable, allowedWeightsForProduct, weightToFolder, getProductPrice } from '../data/availability';
 import { getShortDescription } from '../data/shortDescriptions';
 import { getImageOverride } from '../data/imageOverrides';
+import { ULUNDHU_APPALAM_IMAGE, RICE_APPALAM_IMAGE } from '../data/externalAssets';
 
 // Legacy categories kept for reference only
 const legacyCategories = [
@@ -235,7 +236,12 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
     
     // Coffee category
     { pattern: /^coffee.*powder/i, src: '/Items/coffee powder.jpg', category: 'Coffee' },
-    { pattern: /^coffee.*large/i, src: '/Items/Coffee large.jpg', category: 'Coffee' }
+    { pattern: /^coffee.*large/i, src: '/Items/Coffee large.jpg', category: 'Coffee' },
+
+    // Appalam labels
+    { pattern: /^ulundhu.*appalam/i, src: ULUNDHU_APPALAM_IMAGE, category: 'Appalam' },
+    { pattern: /^rice.*appalam/i, src: RICE_APPALAM_IMAGE, category: 'Appalam' },
+    { pattern: /^maravalli.*kizhangu.*appalam/i, src: '/Images/250/Maravalli Kizhangu appalam.jpeg', category: 'Appalam' }
   ];
 
   // Function to get image for any product across all categories - Updated to use new folder structure
@@ -347,15 +353,20 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
   
   // Helper to detect products that already have proper images & full flows
   const hasImageProduct = (itemTitle: string): boolean => {
+    // If there's an explicit override, treat as image-ready
+    if (getImageOverride(itemTitle)) return true;
     const lower = itemTitle.toLowerCase();
     const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
-    const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
+    const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai') || lower.includes('puliyodharai');
     const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
-    const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
+    const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special') || lower.includes('spcl')) && lower.includes('paruppu') && lower.includes('powder');
     const isHealth = lower.includes('health mix') || lower.includes('healthmix');
     const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
     const isCoffee = lower.includes('coffee') && lower.includes('powder');
-    return isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee;
+    const isUlundhuAppalam = lower.includes('ulundhu') && lower.includes('appalam');
+    const isRiceAppalam = lower.includes('rice') && lower.includes('appalam');
+    const isMaravalliAppalam = lower.includes('maravalli') && lower.includes('appalam');
+    return isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee || isUlundhuAppalam || isRiceAppalam || isMaravalliAppalam;
   };
   
   const handleProductClick = (productName: string) => {
@@ -406,19 +417,19 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
     const allowed = allowedWeightsForProduct(productName);
     // Force specific weights per product
     const lower = productName.toLowerCase();
-    const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
+    const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai') || lower.includes('puliyodharai');
     const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
     const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
     const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
-    const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
+    const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special') || lower.includes('spcl')) && lower.includes('paruppu') && lower.includes('powder');
     const isHealth = lower.includes('health mix') || lower.includes('healthmix');
     const isCoffee = lower.includes('coffee') && lower.includes('powder');
 
     if (isPuliyo || isVathak || isTurmeric || isPoondu || isAndra) {
       setModalWeights(['250g']);
     } else if (isHealth) {
-      // Health Mix: allow only 250g
-      setModalWeights(['250g']);
+      // Health Mix: allow 250g and 500g
+      setModalWeights(['250g','500g']);
     } else if (isCoffee) {
       // Coffee powder: allow only 500g
       setModalWeights(['500g']);
@@ -713,7 +724,7 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
           ) : (
             filteredItems.map((item, index) => {
             const itemLower = item.toLowerCase();
-            const fastMovingList = ['puliodharai mix','vathakkuzhambu mix','poondu pickle','pirandai pickle','jathikkai pickle','mudakkathan pickle','kara narthangai pickle','turmeric powder','sambar powder','rasam powder','ellu idli powder','poondu idli powder','andra spl paruppu powder','moringa leaf powder','curry leaves powder','red chilli powder','ulundhu appalam','rice appalam','kizhangu appalam'];
+            const fastMovingList = ['puliodharai mix','vathakkuzhambu mix','poondu pickle','pirandai pickle','jathikkai pickle','mudakkathan pickle','kara narthangai pickle','turmeric powder','sambar powder','rasam powder','ellu idli powder','poondu idli powder','andra spl paruppu powder','moringa leaf powder','curry leaves powder','red chilli powder','ulundhu appalam','rice appalam','maravalli kizhangu appalam'];
             const isFast = fastMovingList.some((x) => itemLower.includes(x));
             
             // Get just the title part for display
@@ -747,18 +758,47 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
                   </div>
                 </div>
                 
-                {/* Show image only for Vathakkuzhambu Mix; others keep a clean placeholder */}
+                {/* Product image: prefer per-product override, then known mixes, else placeholder */}
                 {(() => {
+                  const override = getImageOverride(itemTitle);
+                  if (override) {
+                    const candidates = [
+                      override,
+                      `/Images/250/${itemTitle}.jpeg`,
+                      `/Images/250/${itemTitle}.jpg`,
+                      `/Images/100/${itemTitle}.jpeg`,
+                      `/Images/100/${itemTitle}.jpg`
+                    ];
+                    return (
+                      <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden rounded-2xl bg-white">
+                        <img
+                          src={candidates[0]}
+                          data-fallback={candidates.slice(1).join(',')}
+                          alt={itemTitle}
+                          className="w-full h-full object-contain object-center p-2 bg-white"
+                          onError={(e:any)=>{
+                            const el = (e.currentTarget as HTMLImageElement);
+                            const list = (el.getAttribute('data-fallback')||'').split(',').filter(Boolean);
+                            if (list.length) { el.src = list.shift() as string; el.setAttribute('data-fallback', list.join(',')); } else { el.style.display='none'; }
+                          }}
+                        />
+                      </div>
+                    );
+                  }
+
                   const lower = itemTitle.toLowerCase();
                   const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
-                  const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
+                  const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai') || lower.includes('puliyodharai');
                   const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
-                  const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
+                  const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special') || lower.includes('spcl')) && lower.includes('paruppu') && lower.includes('powder');
                   const isHealth = lower.includes('health mix') || lower.includes('healthmix');
                   const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
                   const isCoffee = lower.includes('coffee') && lower.includes('powder');
-                  if (isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee) {
-                  const name = isVathak
+                  const isUlundhuAppalam = lower.includes('ulundhu') && lower.includes('appalam');
+                  const isRiceAppalam = lower.includes('rice') && lower.includes('appalam');
+                  const isMaravalliAppalam = lower.includes('maravalli') && lower.includes('kizhangu') && lower.includes('appalam');
+                  if (isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee || isUlundhuAppalam || isRiceAppalam || isMaravalliAppalam) {
+                    const name = isVathak
                       ? 'Vathakkuzhambu Mix'
                       : isPuliyo
                         ? 'Puliyotharai Mix'
@@ -770,7 +810,52 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
                               ? 'Turmaric Powder'
                               : isCoffee
                                 ? 'Coffee powder'
-                                : 'Andra Spl Paruppu Powder';
+                                : isUlundhuAppalam
+                                  ? 'Ulundhu'
+                                  : isRiceAppalam
+                                    ? 'Rice'
+                                    : 'Maravalli Kizhangu appalam';
+
+                    // For Appalam labels we have dedicated round images in 250g folder
+                    if (isUlundhuAppalam) {
+                      const candidates = [ULUNDHU_APPALAM_IMAGE];
+                      return (
+                        <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-4">
+                          <img
+                            src={candidates[0]}
+                            alt={itemTitle}
+                            className="w-full h-full object-contain object-center"
+                          />
+                        </div>
+                      );
+                    }
+
+                    if (isRiceAppalam) {
+                      const candidates = [RICE_APPALAM_IMAGE];
+                      return (
+                        <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-4">
+                          <img
+                            src={candidates[0]}
+                            alt={itemTitle}
+                            className="w-full h-full object-contain object-center"
+                          />
+                        </div>
+                      );
+                    }
+
+                    if (isMaravalliAppalam) {
+                      const candidates = ['/Images/250/Maravalli Kizhangu appalam.jpeg'];
+                      return (
+                        <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-4">
+                          <img
+                            src={candidates[0]}
+                            alt={itemTitle}
+                            className="w-full h-full object-contain object-center"
+                          />
+                        </div>
+                      );
+                    }
+
                     let candidates = [
                       name === 'Poondu Idli Powder' ? '/Images/250/Poondu Idli Powder.png' : `/Images/250/${name}.jpg`,
                       `/Images/250/${name}.jpeg`,
@@ -910,7 +995,7 @@ const sel = (modalWeights[modalWeights.length-1] || '500g') as ('100g'|'250g'|'5
                       // For Puliyotharai Mix, force exact 250g image path
                       let primary = `/Images/${folder}/${title}.webp`;
                       const fallbackList: string[] = [];
-                      if (titleLower.includes('puliyotharai') || titleLower.includes('puliodharai')) {
+                      if (titleLower.includes('puliyotharai') || titleLower.includes('puliodharai') || titleLower.includes('puliyodharai')) {
                         primary = `/Images/250/Puliyotharai Mix.jpg`;
                         const forced = [
                           `/Images/250/Puliyotharai Mix.jpeg`,
@@ -940,7 +1025,7 @@ const sel = (modalWeights[modalWeights.length-1] || '500g') as ('100g'|'250g'|'5
                           `/Images/1kg/Poondu Idli Powder.jpg`
                         ];
                         fallbackList.push(...forced);
-                      } else if ((titleLower.includes('andra') || titleLower.includes('andhra')) && (titleLower.includes('spl') || titleLower.includes('special')) && titleLower.includes('paruppu') && titleLower.includes('powder')) {
+                      } else if ((titleLower.includes('andra') || titleLower.includes('andhra')) && (titleLower.includes('spl') || titleLower.includes('special') || titleLower.includes('spcl')) && titleLower.includes('paruppu') && titleLower.includes('powder')) {
                         primary = `/Images/250/Andra Spl Paruppu Powder.jpg`;
                         const forced = [
                           `/Images/250/Andra Spl Paruppu Powder.jpeg`,
@@ -1067,11 +1152,11 @@ const sel = (modalWeights[modalWeights.length-1] || '500g') as ('100g'|'250g'|'5
                           weights = ['500g'];
                         } else {
                           weights = (
-                            tl.includes('puliyotharai') || tl.includes('puliodharai') ||
+                            tl.includes('puliyotharai') || tl.includes('puliodharai') || tl.includes('puliyodharai') ||
                             tl.includes('vathakkuzhambu') || tl.includes('vathakulambu') ||
                             ((tl.includes('turmeric') || tl.includes('manjal')) && tl.includes('powder')) ||
                             ((tl.includes('poondu') || tl.includes('poondhu')) && (tl.includes('idli') || tl.includes('idly'))) ||
-                            ((tl.includes('andra') || tl.includes('andhra')) && (tl.includes('spl') || tl.includes('special')) && tl.includes('paruppu') && tl.includes('powder'))
+                            ((tl.includes('andra') || tl.includes('andhra')) && (tl.includes('spl') || tl.includes('special') || tl.includes('spcl')) && tl.includes('paruppu') && tl.includes('powder'))
                           )
                             ? ['250g']
                             : (allowedWeightsForProduct(modalProduct.name) as unknown as string[]);
@@ -1121,15 +1206,8 @@ const sel = (modalWeights[modalWeights.length-1] || '500g') as ('100g'|'250g'|'5
                   {/* Action Buttons */}
                   <div className="space-y-3 pt-4">
                     {(() => {
-                      const lower = modalProduct.name.toLowerCase();
-                      const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
-                      const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
-                      const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
-                      const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
-                      const isHealth = lower.includes('health mix') || lower.includes('healthmix');
-                      const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
-                      const isCoffee = lower.includes('coffee') && lower.includes('powder');
-                      const canBuy = isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee;
+                      // Allow buying for any product that is considered image-ready
+                      const canBuy = hasImageProduct(modalProduct.name);
                       if (!canBuy) {
                         return (
                           <div className="w-full text-center py-3 px-6 rounded-lg bg-gray-100 text-gray-600 font-semibold">

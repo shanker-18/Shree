@@ -33,6 +33,7 @@ import { getProductPrice, isProductAvailable } from '../data/availability';
 import { hasUserClaimedFirstOrderDiscount } from '../hooks/useFirstOrderPopup';
 import { getShortDescription } from '../data/shortDescriptions';
 import { getImageOverride } from '../data/imageOverrides';
+import { ULUNDHU_APPALAM_IMAGE, RICE_APPALAM_IMAGE } from '../data/externalAssets';
 import mobileHero from '../../Images/100/Mobile.png';
 
 // Custom CSS for premium styling
@@ -349,16 +350,21 @@ const Homepage: React.FC = () => {
   };
 
   // Helper to detect products that already have proper images & full flows
-  const hasImageProduct = (title: string): boolean => {
-    const lower = title.toLowerCase();
+  const hasImageProduct = (itemTitle: string): boolean => {
+    // If there's an explicit override, treat as image-ready
+    if (getImageOverride(itemTitle)) return true;
+    const lower = itemTitle.toLowerCase();
     const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
-    const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
+    const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai') || lower.includes('puliyodharai');
     const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
-    const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
+    const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special') || lower.includes('spcl')) && lower.includes('paruppu') && lower.includes('powder');
     const isHealth = lower.includes('health mix') || lower.includes('healthmix');
     const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
     const isCoffee = lower.includes('coffee') && lower.includes('powder');
-    return isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee;
+    const isUlundhuAppalam = lower.includes('ulundhu') && lower.includes('appalam');
+    const isRiceAppalam = lower.includes('rice') && lower.includes('appalam');
+    const isMaravalliAppalam = lower.includes('maravalli') && lower.includes('appalam');
+    return isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee || isUlundhuAppalam || isRiceAppalam || isMaravalliAppalam;
   };
 
   // Comprehensive image mapping - Updated to use ALL available images
@@ -418,7 +424,12 @@ const Homepage: React.FC = () => {
     
     // Coffee category
     { pattern: /^coffee.*powder/i, src: '/Items/coffee powder.jpg', category: 'Coffee' },
-    { pattern: /^coffee.*large/i, src: '/Items/Coffee large.jpg', category: 'Coffee' }
+    { pattern: /^coffee.*large/i, src: '/Items/Coffee large.jpg', category: 'Coffee' },
+
+    // Appalam category labels
+    { pattern: /^ulundhu.*appalam/i, src: ULUNDHU_APPALAM_IMAGE },
+    { pattern: /^rice.*appalam/i, src: RICE_APPALAM_IMAGE },
+    { pattern: /^maravalli.*kizhangu.*appalam/i, src: '/Images/250/Maravalli Kizhangu appalam.jpeg' }
   ];
 
   // Function to get image for any product across all categories - Updated to use new folder structure
@@ -654,16 +665,95 @@ const Homepage: React.FC = () => {
                           </div>
                         </div>
                         
-                        {/* Show image only for Vathakkuzhambu Mix; others keep a clean placeholder */}
+                        {/* Product image: prefer per-product override, then known mixes, else placeholder */}
                         {(() => {
+                          const override = getImageOverride(itemTitle);
+                          if (override) {
+                            const candidates = [
+                              override,
+                              `/Images/250/${itemTitle}.jpeg`,
+                              `/Images/250/${itemTitle}.jpg`,
+                              `/Images/100/${itemTitle}.jpeg`,
+                              `/Images/100/${itemTitle}.jpg`
+                            ];
+                            return (
+                              <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-2xl bg-white">
+                                <img
+                                  src={candidates[0]}
+                                  data-fallback={candidates.slice(1).join(',')}
+                                  alt={itemTitle}
+                                  loading="lazy"
+                                  decoding="async"
+                                  className="w-full h-full object-contain object-center p-2 bg-white"
+                                  onError={(e:any) => {
+                                    const el = e.currentTarget as HTMLImageElement;
+                                    const list = (el.getAttribute('data-fallback')||'').split(',').filter(Boolean);
+                                    if (list.length) { el.src = list.shift() as string; el.setAttribute('data-fallback', list.join(',')); }
+                                    else { el.style.display='none'; }
+                                  }}
+                                />
+                              </div>
+                            );
+                          }
+
                           const lower = itemTitle.toLowerCase();
                           const isVathak = lower.includes('vathakkuzhambu') || lower.includes('vathakulambu');
-                          const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai');
+                          const isPuliyo = lower.includes('puliyotharai') || lower.includes('puliodharai') || lower.includes('puliyodharai');
                           const isPoondu = (lower.includes('poondu') || lower.includes('poondhu')) && (lower.includes('idli') || lower.includes('idly'));
-                          const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special')) && lower.includes('paruppu') && lower.includes('powder');
+                          const isAndra = (lower.includes('andra') || lower.includes('andhra')) && (lower.includes('spl') || lower.includes('special') || lower.includes('spcl')) && lower.includes('paruppu') && lower.includes('powder');
                           const isHealth = lower.includes('health mix') || lower.includes('healthmix');
                           const isTurmeric = (lower.includes('turmeric') || lower.includes('manjal')) && lower.includes('powder');
                           const isCoffee = lower.includes('coffee') && lower.includes('powder');
+                          const isUlundhuAppalam = lower.includes('ulundhu') && lower.includes('appalam');
+                          const isRiceAppalam = lower.includes('rice') && lower.includes('appalam');
+                          const isMaravalliAppalam = lower.includes('maravalli') && lower.includes('appalam');
+                          
+                          // Handle appalam products with round label images
+                          if (isUlundhuAppalam) {
+                            const candidates = [ULUNDHU_APPALAM_IMAGE];
+                            return (
+                              <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-4">
+                                <img
+                                  src={candidates[0]}
+                                  alt={itemTitle}
+                                  loading="lazy"
+                                  decoding="async"
+                                  className="w-full h-full object-contain object-center"
+                                />
+                              </div>
+                            );
+                          }
+                          
+                           if (isRiceAppalam) {
+                             const candidates = [RICE_APPALAM_IMAGE];
+                            return (
+                              <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-4">
+                                <img
+                                  src={candidates[0]}
+                                  alt={itemTitle}
+                                  loading="lazy"
+                                  decoding="async"
+                                  className="w-full h-full object-contain object-center"
+                                />
+                              </div>
+                            );
+                          }
+                          
+                          if (isMaravalliAppalam) {
+                            const candidates = ['/Images/250/Maravalli Kizhangu appalam.jpeg'];
+                            return (
+                              <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-2xl bg-white flex items-center justify-center p-4">
+                                <img
+                                  src={candidates[0]}
+                                  alt={itemTitle}
+                                  loading="lazy"
+                                  decoding="async"
+                                  className="w-full h-full object-contain object-center"
+                                />
+                              </div>
+                            );
+                          }
+                          
                           if (isVathak || isPuliyo || isPoondu || isAndra || isHealth || isTurmeric || isCoffee) {
                             const name = isVathak
                               ? 'Vathakkuzhambu Mix'
@@ -1082,9 +1172,22 @@ const Homepage: React.FC = () => {
             <div>
               <h4 className="text-lg font-semibold mb-4 text-red-400">Follow Us</h4>
               <div className="flex space-x-4">
-                <Facebook className="h-6 w-6 text-gray-300 hover:text-red-400 cursor-pointer transition-colors duration-300" />
-                <Instagram className="h-6 w-6 text-gray-300 hover:text-red-400 cursor-pointer transition-colors duration-300" />
-                <Twitter className="h-6 w-6 text-gray-300 hover:text-red-400 cursor-pointer transition-colors duration-300" />
+                <a
+                  href="https://www.facebook.com/profile.php?id=61583675317521"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Visit Shree Raaga on Facebook"
+                >
+                  <Facebook className="h-6 w-6 text-gray-300 hover:text-red-400 cursor-pointer transition-colors duration-300" />
+                </a>
+                <a
+                  href="https://www.instagram.com/shree_raaga/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Visit Shree Raaga on Instagram"
+                >
+                  <Instagram className="h-6 w-6 text-gray-300 hover:text-red-400 cursor-pointer transition-colors duration-300" />
+                </a>
               </div>
 
             </div>

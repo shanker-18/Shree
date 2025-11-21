@@ -5,7 +5,7 @@
 ### Mix & Pickle Category
 All products in this category are properly mapped with their images:
 
-1. **Puliyotharai Mix** 
+1. **Puliyodharai Mix** 
    - Image: `Puliyotharai Mix.jpeg`
    - Description: A chemical-free mix used to prepare tamarind rice. 100 grams are sufficient for a quarter-measure of rice.
 
@@ -52,7 +52,7 @@ All products in this category are properly mapped with their images:
    - Image: `Idly Powder.jpeg`
    - Description: Traditional South Indian idli podi made with authentic spices and ingredients.
 
-5. **Poondu Idli Powder**
+5. **Poondu Idly Powder**
    - Image: `Poondu idly powder.jpeg`
    - Description: Special garlic-infused idli powder with medicinal properties and rich taste.
 
@@ -62,7 +62,7 @@ All products in this category are properly mapped with their images:
 
 ### Additional Products (Not in Images but in Categories)
 - Ellu Idli Powder
-- Andra Spl Paruppu Powder
+- Andhra Spcl Paruppu Powder
 - Moringa Leaf Powder
 - Curry Leaves Powder
 - Red Chilli Powder

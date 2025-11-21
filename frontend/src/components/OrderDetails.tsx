@@ -53,7 +53,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   // Build display items: enforce Puliyotharai Mix as 250g and add image
   const displayItems = useMemo(() => {
     if (!orderItems || !Array.isArray(orderItems)) return [] as any[];
-    const isPuliyo = (s: string) => /puliyotharai|puliodharai/i.test(s);
+    const isPuliyo = (s: string) => /puliyotharai|puliodharai|puliyodharai/i.test(s);
     const map = new Map<string, any>();
     orderItems.forEach((item: any) => {
       const base = String(item.product_name || '').split('(')[0].trim();
@@ -62,7 +62,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       let imgCandidates: string[] | undefined;
       if (isPuliyo(base)) {
         key = 'Puliyotharai Mix';
-        displayName = 'Puliyotharai Mix (250g)';
+        displayName = 'Puliyodharai Mix (250g)';
         imgCandidates = [
           `/Images/250/Puliyotharai Mix.jpg`,
           `/Images/250/Puliyotharai Mix.jpeg`,
@@ -552,11 +552,11 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
               <div className="p-3 bg-blue-100 rounded-lg">
                 <ShoppingBag className="h-8 w-8 text-blue-600" />
               </div>
-              {(/puliyotharai|puliodharai/i.test(finalProductName)) && (
+              {(/puliyotharai|puliodharai|puliyodharai/i.test(finalProductName)) && (
                 <img
                   src={'/Images/250/Puliyotharai Mix.jpg'}
                   data-fallback={'/Images/250/Puliyotharai Mix.jpeg,/Images/100/Puliyotharai Mix.jpg,/Images/100/Puliyotharai Mix.jpeg,/Images/500/Puliyotharai Mix.jpg,/Images/1kg/Puliyotharai Mix.jpg'}
-                  alt={'Puliyotharai Mix'}
+                  alt={'Puliyodharai Mix'}
                   className="w-16 h-16 rounded object-contain bg-white p-1 border border-gray-200"
                   onError={(e: any) => {
                     const el = e.currentTarget as HTMLImageElement;
@@ -566,7 +566,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                 />
               )}
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 text-lg">{(/puliyotharai|puliodharai/i.test(finalProductName)) ? 'Puliyotharai Mix (250g)' : finalProductName}</h3>
+                <h3 className="font-semibold text-gray-900 text-lg">{(/puliyotharai|puliodharai|puliyodharai/i.test(finalProductName)) ? 'Puliyodharai Mix (250g)' : finalProductName}</h3>
                 <p className="text-gray-600 text-sm">{finalCategory}</p>
                 <p className="text-2xl font-bold text-blue-600">₹{finalPrice}</p>
               </div>

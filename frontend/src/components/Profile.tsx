@@ -49,29 +49,9 @@ const Profile: React.FC = () => {
       state: profile.state || ''
     });
 
-    // Fetch user orders (mock data for now)
-    // In a real app, you would fetch this from your backend
-    setOrders([
-      {
-        id: 'ORD-1234',
-        date: '2023-10-15',
-        total: 1250,
-        status: 'Delivered',
-        items: [
-          { name: 'Turmeric Powder', quantity: 2, price: 350 },
-          { name: 'Lemon Pickle', quantity: 1, price: 550 }
-        ]
-      },
-      {
-        id: 'ORD-5678',
-        date: '2023-11-02',
-        total: 850,
-        status: 'Processing',
-        items: [
-          { name: 'Cekku Groundnut Oil', quantity: 1, price: 850 }
-        ]
-      }
-    ]);
+    // NOTE: We intentionally do not set any mock orders here.
+    // In production, this should be populated from the real backend.
+    setOrders([]);
   }, [profile, navigate, authLoading]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
