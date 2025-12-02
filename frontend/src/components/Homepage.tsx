@@ -212,7 +212,7 @@ const Homepage: React.FC = () => {
     // On localhost/dev, allow normal logic
     return localStorage.getItem('hasDiscountEligibility') === 'true' && 
            localStorage.getItem('freeSamplesClaimed') === 'true' &&
-           user;
+           !!user;  // Convert user object to boolean
   }, [isProduction, user]);
   
   // Clear problematic flags on production
