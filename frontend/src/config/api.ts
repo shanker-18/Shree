@@ -25,6 +25,7 @@ export const API_ENDPOINTS = {
   HEALTH: `${API_BASE_URL}/api`,
   PAYMENTS_CREATE_ORDER: `${API_BASE_URL}/api/payments/create-order`,
   PAYMENTS_VERIFY: `${API_BASE_URL}/api/payments/verify`,
+  REVIEWS: `${API_BASE_URL}/api/reviews`,
 };
 
 // API utility functions with better error handling
