@@ -37,18 +37,11 @@ router.post('/create-order', async (req, res) => {
       });
     }
 
-    // Normalize amount so we never double-convert rupees → paise.
-    // Heuristic: for this store, real order totals in rupees will always be well below 10,000.
-    // - If the incoming amount is small (< 10,000), treat it as RUPEES and convert once.
-    // - If it's large (>= 10,000), treat it as already in PAISE and do NOT multiply again.
-    let amountInPaise;
-    if (normalizedAmount >= 10000) {
-      console.log('🧾 Backend - treating received amount as PAISE:', normalizedAmount);
-      amountInPaise = Math.round(normalizedAmount);
-    } else {
-      console.log('🧾 Backend - treating received amount as RUPEES:', normalizedAmount);
-      amountInPaise = Math.round(normalizedAmount * 100);
-    }
+    // Frontend sends amount in RUPEES, backend converts to paise
+    // Razorpay expects amount in paise (smallest currency unit)
+    const amountInPaise = Math.round(normalizedAmount * 100);
+    console.log('🧾 Backend - received amount (rupees):', normalizedAmount);
+    console.log('🧾 Backend - converted to paise:', amountInPaise);
 
     const options = {
       amount: amountInPaise, // Razorpay expects amount in paise
