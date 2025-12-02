@@ -68,7 +68,7 @@ const NavbarOfferPopup: React.FC<NavbarOfferPopupProps> = ({ isOpen, onClose, on
                   Ongoing Offer
                 </p>
                 <p className="text-xs text-red-700 leading-relaxed">
-                  Place an order for ₹500 or more and get 15% off on the total. Valid for all products.
+                  Place an order for ₹500 or more and get 15% off on the total and get the free delivery. Valid for all products.
                 </p>
               </div>
             </div>

@@ -177,12 +177,12 @@ const Navbar: React.FC = () => {
               <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-yellow-400 rounded-full animate-bounce"></div>
             </button>
             
-            {/* Small Offer Popup - Temporarily disabled */}
-            {/* <NavbarOfferPopup 
+            {/* Small Offer Popup */}
+            <NavbarOfferPopup 
               isOpen={isOfferPopupOpen}
               onClose={() => setIsOfferPopupOpen(false)}
               onClaim={handleClaimOfferFromPopup}
-            /> */}
+            />
           </div>
         </nav>
 
