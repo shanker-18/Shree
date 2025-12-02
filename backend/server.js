@@ -23,7 +23,7 @@ import reviewsRouter from './routes/reviews.js';
 console.log("🚀 Starting ShreeRaagaSWAADGHAR API server...");
 
 const app = express();
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 10000;
 
 // Middleware
 app.use(cors());
