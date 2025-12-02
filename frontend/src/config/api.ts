@@ -67,5 +67,6 @@ console.log('API Configuration:', {
   prod: import.meta.env.PROD,
   hostname: typeof window !== 'undefined' ? window.location.hostname : 'server',
   baseUrl: API_BASE_URL,
+  viteApiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'NOT SET',
   endpoints: API_ENDPOINTS
 });
