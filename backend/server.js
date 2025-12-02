@@ -18,6 +18,7 @@ import express from 'express';
 import cors from 'cors';
 import ordersRouter from './routes/orders.js';
 import paymentsRouter from './routes/payments.js';
+import reviewsRouter from './routes/reviews.js';
 
 console.log("🚀 Starting ShreeRaagaSWAADGHAR API server...");
 
@@ -31,9 +32,10 @@ app.use(express.json());
 // Log environment status
 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 
-// Use the orders and payments routers
+// Use the orders, payments and reviews routers
 app.use('/api/orders', ordersRouter);
 app.use('/api/payments', paymentsRouter);
+app.use('/api/reviews', reviewsRouter);
 
 // Add a test route
 app.get('/', (req, res) => {

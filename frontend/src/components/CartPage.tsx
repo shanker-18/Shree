@@ -6,7 +6,7 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 
 const CartPage: React.FC = () => {
-  const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartSubtotal, getDiscount, getDiscountInfo, hasFreeSamples, hasPaidItems, clearCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartSubtotal, getDiscount, getDeliveryCharge, getDiscountInfo, hasFreeSamples, hasPaidItems, clearCart } = useCart();
   const { profile } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -235,6 +235,18 @@ const CartPage: React.FC = () => {
                     <span>-₹{getDiscount().toFixed(2)}</span>
                   </div>
                 ); })()}
+                {getDeliveryCharge() > 0 && (
+                  <div className="flex justify-between text-orange-600">
+                    <span>Delivery Charge</span>
+                    <span>₹{getDeliveryCharge()}</span>
+                  </div>
+                )}
+                {getDeliveryCharge() === 0 && getCartSubtotal() >= 500 && (
+                  <div className="flex justify-between text-green-600">
+                    <span className="text-sm">✓ Free Delivery</span>
+                    <span>₹0</span>
+                  </div>
+                )}
                 <div className="border-t pt-4">
                   <div className="flex justify-between text-lg font-bold text-gray-800">
                     <span>Total</span>

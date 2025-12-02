@@ -6,6 +6,7 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useTempSamples } from '../contexts/TempSamplesContext';
 import AuthModal from './AuthModal';
+import ProductReviews from './ProductReviews';
 import { isProductAvailable, allowedWeightsForProduct, weightToFolder, getProductPrice } from '../data/availability';
 import { categories } from '../data/categories';
 import { ULUNDHU_APPALAM_IMAGE, RICE_APPALAM_IMAGE } from '../data/externalAssets';
@@ -757,6 +758,11 @@ const ProductDetails: React.FC<ProductDetailsProps> = () => {
           </div>
         </div>
       )}
+
+      {/* Reviews Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <ProductReviews productName={name} />
+      </div>
 
       <AuthModal 
         isOpen={showAuthModal} 

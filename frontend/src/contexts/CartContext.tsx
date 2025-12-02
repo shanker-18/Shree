@@ -22,6 +22,7 @@ interface CartContextType {
   getCartTotal: () => number;
   getCartSubtotal: () => number;
   getDiscount: () => number;
+  getDeliveryCharge: () => number;
   getDiscountInfo: () => { type: string; percentage: number; amount: number };
   hasFreeSamples: () => boolean;
   hasPaidItems: () => boolean;
@@ -183,7 +184,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const getCartTotal = () => {
     const subtotal = getCartSubtotal();
     const discount = getDiscount();
-    return Math.max(0, subtotal - discount);
+    const delivery = getDeliveryCharge();
+    return Math.max(0, subtotal - discount + delivery);
+  };
+
+  const getDeliveryCharge = () => {
+    const subtotal = getCartSubtotal();
+    // ₹70 delivery charge if order is below ₹500, free delivery for ₹500+
+    return subtotal < 500 ? 70 : 0;
   };
 
   const isInCart = (productName: string) => {
@@ -241,6 +249,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     getCartTotal,
     getCartSubtotal,
     getDiscount,
+    getDeliveryCharge,
     getDiscountInfo,
     hasFreeSamples,
     hasPaidItems,

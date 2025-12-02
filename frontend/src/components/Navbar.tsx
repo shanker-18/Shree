@@ -225,10 +225,7 @@ const Navbar: React.FC = () => {
                   )}
                 </div>
                 
-                {/* First-time user offer */}
-                {profile.isFirstTimeOrder && (
-                  {/* Offer section removed */}
-                )}
+
                 
                 <div className="p-1">
                   <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md flex items-center gap-2">

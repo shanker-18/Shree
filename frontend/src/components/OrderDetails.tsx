@@ -47,8 +47,10 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     // Fallback to single product price if no structured items present
     return subtotal > 0 ? subtotal : Number(finalPrice) || 0;
   }, [paidItems, finalPrice]);
-  const computedDiscount = useMemo(() => computedSubtotal >= 500 ? Math.round(computedSubtotal * 0.15) : 0, [computedSubtotal]);
-  const computedFinal = useMemo(() => Math.max(0, computedSubtotal - computedDiscount), [computedSubtotal, computedDiscount]);
+  const computedDiscount = useMemo(
+    () => (computedSubtotal >= 500 ? Math.round(computedSubtotal * 0.15) : 0),
+    [computedSubtotal]
+  );
 
   // Build display items: enforce Puliyotharai Mix as 250g and add image
   const displayItems = useMemo(() => {
@@ -113,6 +115,27 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
   const { profile, updateProfile, savedAddress, saveAddress, getSavedAddress } = useAuth();
   const { clearTempSamples, hasTempSamples } = useTempSamples();
   const { clearCart } = useCart();
+
+  // Preview delivery charge and final total on the Order Details page based on current address info
+  const previewAddressState =
+    isAuthenticated && savedAddress && !isUsingCustomAddress
+      ? savedAddress.state
+      : formData.state;
+  const previewAddressCity =
+    isAuthenticated && savedAddress && !isUsingCustomAddress
+      ? savedAddress.city
+      : formData.city;
+
+  const {
+    deliveryCharge: previewDeliveryCharge,
+    deliveryLabel: previewDeliveryLabel,
+  } = calculateDeliveryCharge(computedSubtotal, previewAddressState, previewAddressCity);
+
+  const previewIsFreeDelivery = previewDeliveryCharge === 0;
+  const previewFinalTotal = useMemo(
+    () => Math.max(0, computedSubtotal - computedDiscount + previewDeliveryCharge),
+    [computedSubtotal, computedDiscount, previewDeliveryCharge]
+  );
 
   // Cities in India
   const indianCities = [
@@ -254,6 +277,42 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
     return state === 'Tamil Nadu' ? '3 days' : '10 days';
   };
 
+  // Calculate delivery charge based on order amount and location
+  function calculateDeliveryCharge(amount: number, state: string, city: string) {
+    // Free delivery for orders above ₹499
+    if (amount > 499) {
+      return {
+        deliveryCharge: 0,
+        deliveryLabel: '₹0',
+      };
+    }
+
+    const normalizedState = (state || '').trim().toLowerCase();
+    const normalizedCity = (city || '').trim().toLowerCase();
+
+    const isTamilNadu =
+      normalizedState === 'tamil nadu' ||
+      normalizedState === 'tamilnadu' ||
+      normalizedState === 'tn' ||
+      normalizedState === 't.n.';
+    const isKarnataka = normalizedState === 'karnataka';
+    const isBangalore = normalizedCity === 'bangalore' || normalizedCity === 'bengaluru';
+
+    // Within Tamil Nadu, Karnataka, or Bangalore city: flat ₹70, no extra
+    if (isTamilNadu || isKarnataka || isBangalore) {
+      return {
+        deliveryCharge: 70,
+        deliveryLabel: '₹70',
+      };
+    }
+
+    // Other states: base charge added to total; show "70+extra" in UI
+    return {
+      deliveryCharge: 70,
+      deliveryLabel: '70+extra',
+    };
+  };
+
   const handleSaveAddress = async (address: Address) => {
     try {
       const result = await saveAddress(address);
@@ -324,20 +383,19 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
 
     try {
       // Calculate prices - use values from Buy Now flow if available, otherwise calculate
-      let orderTotalAmount, orderDiscountAmount, orderFinalAmount;
-      
+      let orderTotalAmount: number;
+      let orderDiscountAmount: number;
+
       if ((isFromBuyNow || isFromCart || isFromSamples) && orderItems.length > 0) {
         // Recalculate totals based on current items
         orderTotalAmount = computedSubtotal;
         orderDiscountAmount = computedDiscount;
-        orderFinalAmount = computedFinal;
       } else {
         // Single product fallback
         const singleSubtotal = Number(finalPrice) || 0;
         const singleDiscount = singleSubtotal >= 500 ? Math.round(singleSubtotal * 0.15) : 0;
         orderTotalAmount = singleSubtotal;
         orderDiscountAmount = singleDiscount;
-        orderFinalAmount = Math.max(0, singleSubtotal - singleDiscount);
       }
 
       // Determine which address data to use (saved address or form data)
@@ -369,6 +427,16 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
       // Combine address fields
       const fullAddress = `${addressData.addressLine1}${addressData.addressLine2 ? ', ' + addressData.addressLine2 : ''}, ${addressData.city}, ${addressData.state} - ${addressData.pincode}`;
 
+      // Calculate delivery charge based on amount and location
+      const { deliveryCharge, deliveryLabel } = calculateDeliveryCharge(
+        orderTotalAmount,
+        addressData.state,
+        addressData.city
+      );
+
+      // Final amount includes delivery charge
+      const orderFinalAmount = Math.max(0, orderTotalAmount - orderDiscountAmount + deliveryCharge);
+
       // Create order using order service
       const orderData = {
         user_id: isAuthenticated && profile ? profile.id : null,
@@ -389,6 +457,8 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
         ],
         total_amount: orderTotalAmount,
         discount_amount: orderDiscountAmount,
+        delivery_charge: deliveryCharge,
+        delivery_label: deliveryLabel,
         final_amount: orderFinalAmount,
         delivery_time: getDeliveryTime(addressData.state),
         is_guest: !isAuthenticated,
@@ -538,10 +608,22 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({
                     <span className="text-lg font-semibold">-₹{computedDiscount}</span>
                   </div>
                 )}
+                {!previewIsFreeDelivery && (
+                  <div className="flex justify-between items-center text-orange-600">
+                    <span className="text-base">Delivery Charge:</span>
+                    <span className="text-lg font-semibold">{previewDeliveryLabel}</span>
+                  </div>
+                )}
+                {previewIsFreeDelivery && (
+                  <div className="flex justify-between items-center text-green-600">
+                    <span className="text-sm">✓ Free Delivery</span>
+                    <span className="text-lg font-semibold">₹0</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold text-gray-900">Total:</span>
-                  <span className={`text-2xl font-bold ${computedFinal === 0 ? 'text-green-600' : 'text-blue-600'}`}>
-                    {computedFinal === 0 ? 'FREE' : `₹${computedFinal}`}
+                  <span className={`text-2xl font-bold ${previewFinalTotal === 0 ? 'text-green-600' : 'text-blue-600'}`}>
+                    {previewFinalTotal === 0 ? 'FREE' : `₹${previewFinalTotal}`}
                   </span>
                 </div>
               </div>

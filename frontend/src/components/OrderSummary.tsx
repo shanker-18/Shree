@@ -48,6 +48,11 @@ const OrderSummary: React.FC = () => {
     );
   }
 
+  // Derive delivery charge and label for display and consistency with totals
+  const deliveryCharge: number = orderData.delivery_charge ?? (orderData.total_amount <= 499 ? 70 : 0);
+  const deliveryLabel: string = orderData.delivery_label ?? (deliveryCharge > 0 ? `₹${deliveryCharge}` : '₹0');
+  const isFreeDelivery = deliveryCharge === 0;
+
   const handlePlaceOrder = async () => {
     setLoading(true);
 
@@ -386,6 +391,18 @@ const OrderSummary: React.FC = () => {
                     <div className="flex justify-between text-green-600 text-lg">
                       <span>Discount:</span>
                       <span>-₹{orderData.discount_amount}</span>
+                    </div>
+                  )}
+                  {!isFreeDelivery && (
+                    <div className="flex justify-between text-orange-600 text-lg">
+                      <span>Delivery Charge:</span>
+                      <span>{deliveryLabel}</span>
+                    </div>
+                  )}
+                  {isFreeDelivery && (
+                    <div className="flex justify-between text-green-600 text-lg">
+                      <span className="text-sm">✓ Free Delivery</span>
+                      <span>₹0</span>
                     </div>
                   )}
                   <div className="border-t border-gray-200 pt-4">
