@@ -23,6 +23,8 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productName }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; reviewId: number | null }>({ show: false, reviewId: null });
+  const [deleteLoading, setDeleteLoading] = useState(false);
   
   // Form state (no email required)
   const [formData, setFormData] = useState({
@@ -97,9 +99,8 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productName }) => {
 
   // Handle review deletion
   const handleDeleteReview = async (reviewId: number) => {
-    if (!confirm('Are you sure you want to delete this review?')) return;
-
     try {
+      setDeleteLoading(true);
       const response = await fetch(`${API_ENDPOINTS.REVIEWS}/${reviewId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -112,9 +113,12 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productName }) => {
 
       // Refresh reviews
       await fetchReviews();
+      setDeleteConfirm({ show: false, reviewId: null });
     } catch (err) {
       console.error('Error deleting review:', err);
       setError('Failed to delete review');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -297,7 +301,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productName }) => {
                     {/* Show delete button only for user's own reviews */}
                     {user && user.email === review.user_email && (
                       <button
-                        onClick={() => handleDeleteReview(review.id)}
+                        onClick={() => setDeleteConfirm({ show: true, reviewId: review.id })}
                         className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                         title="Delete review"
                       >
@@ -315,6 +319,55 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productName }) => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="bg-white rounded-lg shadow-xl max-w-sm w-full p-6"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-6 w-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900">Delete Review</h3>
+                <p className="text-gray-600 text-sm mt-2">Are you sure you want to delete this review? This action cannot be undone.</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 mt-6 justify-end">
+              <button
+                onClick={() => setDeleteConfirm({ show: false, reviewId: null })}
+                disabled={deleteLoading}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteConfirm.reviewId && handleDeleteReview(deleteConfirm.reviewId)}
+                disabled={deleteLoading}
+                className="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {deleteLoading ? (
+                  <>
+                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
