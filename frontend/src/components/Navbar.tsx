@@ -177,12 +177,12 @@ const Navbar: React.FC = () => {
               <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-yellow-400 rounded-full animate-bounce"></div>
             </button>
             
-            {/* Small Offer Popup */}
-            <NavbarOfferPopup 
+            {/* Small Offer Popup - Temporarily disabled */}
+            {/* <NavbarOfferPopup 
               isOpen={isOfferPopupOpen}
               onClose={() => setIsOfferPopupOpen(false)}
               onClaim={handleClaimOfferFromPopup}
-            />
+            /> */}
           </div>
         </nav>
 
@@ -373,8 +373,8 @@ const Navbar: React.FC = () => {
                 <Gift className="h-3 w-3 animate-spin" />
               </button>
               
-              {/* Mobile Small Offer Popup */}
-              <div className="relative">
+              {/* Mobile Small Offer Popup - Temporarily disabled */}
+              {/* <div className="relative">
                 <NavbarOfferPopup 
                   isOpen={isOfferPopupOpen}
                   onClose={() => setIsOfferPopupOpen(false)}
@@ -383,7 +383,7 @@ const Navbar: React.FC = () => {
                     setIsMobileMenuOpen(false);
                   }}
                 />
-              </div>
+              </div> */}
             </div>
             
             {/* Mobile User Options */}
