@@ -227,23 +227,7 @@ const Navbar: React.FC = () => {
                 
                 {/* First-time user offer */}
                 {profile.isFirstTimeOrder && (
-                  <div className="p-2 border-b border-gray-100 bg-gradient-to-r from-amber-50 to-yellow-50">
-                    <div className="flex items-center gap-2">
-                      <div className="flex-shrink-0 h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center">
-                        <Gift className="h-4 w-4 text-amber-600" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-amber-800">New User Offer!</p>
-                        <p className="text-xs text-amber-700">Free 50g sample with your first order</p>
-                      </div>
-                    </div>
-                    <a 
-                      href="/#categories" 
-                      className="mt-1 text-xs font-medium text-amber-600 hover:text-amber-800 flex items-center justify-end"
-                    >
-                      Shop now <ChevronRight className="h-3 w-3" />
-                    </a>
-                  </div>
+                  {/* Offer section removed */}
                 )}
                 
                 <div className="p-1">

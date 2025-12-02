@@ -924,7 +924,6 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
                             <>
                               <span className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">₹{firstOrderPrice}</span>
                               <span className="text-sm sm:text-base md:text-lg text-gray-500 line-through">₹{basePrice}</span>
-                              <span className="text-xs text-red-500 font-bold">FIRST ORDER</span>
                             </>
                           );
                         }
