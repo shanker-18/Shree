@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Cache & Reload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .steps {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: left;
+            margin: 20px 0;
+        }
+        .steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+            color: #555;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+            margin: 20px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Cache Cleared!</h1>
+        <p>Your browser cache and localStorage have been cleared.</p>
+        
+        <div class="steps">
+            <p><strong>What was cleared:</strong></p>
+            <ol>
+                <li>Browser LocalStorage (saved preferences, discount flags)</li>
+                <li>Session data</li>
+                <li>Cache metadata</li>
+            </ol>
+        </div>
+        
+        <p>Now do a <strong>hard refresh</strong> in your browser:</p>
+        
+        <div class="steps">
+            <p><strong>Hard Refresh Shortcut:</strong></p>
+            <ol>
+                <li><strong>Windows/Linux:</strong> Press <kbd>Ctrl + Shift + R</kbd></li>
+                <li><strong>Mac:</strong> Press <kbd>Cmd + Shift + R</kbd></li>
+                <li><strong>Or:</strong> Open DevTools (F12) → Right-click Refresh button → "Empty cache and hard refresh"</li>
+            </ol>
+        </div>
+        
+        <div class="success" id="success">✓ Cache cleared successfully!</div>
+        
+        <button onclick="goHome()">Go to Homepage</button>
+        <button onclick="goCategory()">Go to Products</button>
+    </div>
+
+    <script>
+        // Clear localStorage
+        localStorage.clear();
+        
+        // Clear sessionStorage
+        sessionStorage.clear();
+        
+        // Show success message
+        document.getElementById('success').style.display = 'block';
+        
+        function goHome() {
+            window.location.href = '/';
+        }
+        
+        function goCategory() {
+            window.location.href = '/category/powder';
+        }
+    </script>
+</body>
+</html>
