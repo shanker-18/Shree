@@ -917,9 +917,8 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
                     <div className="flex items-center gap-3">
                       {isProductAvailable(itemTitle) ? (() => {
                         const basePrice = getProductPrice(itemTitle);
-                        const firstOrderPrice = Math.round(basePrice / 2);
-                        const discountPrice = Math.round(basePrice * 0.9); // 10% off
                         if (hasClaimedFirstOrderDiscount && !hasCompletedFirstOrder && user) {
+                          const firstOrderPrice = Math.round(basePrice / 2);
                           return (
                             <>
                               <span className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">₹{firstOrderPrice}</span>
@@ -928,6 +927,7 @@ const [modalQuantities, setModalQuantities] = useState<{[key: string]: number}>(
                           );
                         }
                         if (hasDiscountEligibility) {
+                          const discountPrice = Math.round(basePrice * 0.9); // 10% off
                           return (
                             <>
                               <span className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">₹{discountPrice}</span>
